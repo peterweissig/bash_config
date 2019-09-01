@@ -11,10 +11,25 @@ fi
 
 export SOURCED_BASH_CONFIG=1
 
-#***************************[paths and files]*********************************
-# 2018 11 17
 
-temp_local_path="$(cd "$(dirname "${BASH_SOURCE}")" && pwd )/"
+#***************************[optional external variables]*********************
+# 2019 04 21
+
+# CONFIG_PATH_BACKUP
+if [ "$CONFIG_PATH_BACKUP" != "" ] && [ ! -d "$CONFIG_PATH_BACKUP" ]; then
+    echo -n "Error sourcing \"config\": "
+    echo "path \$CONFIG_PATH_BACKUP does not exist"
+fi
+
+#***************************[paths and files]*********************************
+# 2019 04 21
+
+# this is only a local variable - no export
+CONFIG_PATH="$(cd "$(dirname "${BASH_SOURCE}")" && pwd )/"
+
+if [ "$CONFIG_PATH_BACKUP" == "" ]; then
+    export CONFIG_PATH_BACKUP="${CONFIG_PATH}backup/"
+fi
 
 
 #***************************[setting enviroment variables]********************
@@ -25,6 +40,6 @@ export EDITOR='nano -w'
 
 
 #***************************[source]******************************************
-# 2018 09 27
+# 2019 04 21
 
-. ${temp_local_path}scripts/help.sh
+. ${CONFIG_PATH}scripts/help.sh
