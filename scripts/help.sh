@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2019 09 08
+# 2019 09 09
 
 function config_help_all() {
 
@@ -35,17 +35,21 @@ function config_help_all() {
     echo ""
     echo "global functions"
     echo -n "  "; echo "config_update_system"
+    echo -n "  "; nano_config -h
+    echo -n "  "; nano_config_restore -h
     echo ""
     echo "setup config files"
-    echo -n "  "; echo "config_bash_search"
+    echo -n "  "; echo "config_bash_search(_restore)"
     echo ""
     echo "internal"
-    echo -n "  "; _config_file_modify_awk -h
+    echo -n "  "; _config_file_modify -h
+    echo -n "  "; _config_file_restore -h
+    echo -n "  "; _config_file_return_last -h
     echo ""
 }
 
 #***************************[help]********************************************
-# 2019 09 08
+# 2019 09 09
 
 function config_help() {
 
@@ -58,8 +62,10 @@ function config_help() {
     echo ""
     echo "global functions"
     echo -n "  "; echo "config_update_system"
+    echo -n "  "; nano_config -h
+    echo -n "  "; nano_config_restore -h
     echo ""
     echo "setup config files"
-    echo -n "  "; echo "config_bash_search"
+    echo -n "  "; echo "config_bash_search(_restore)"
     echo ""
 }

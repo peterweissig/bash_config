@@ -1,4 +1,4 @@
-#***************************[inputrc]*****************************************
+#***************************[apt]*********************************************
 # 2019 09 08
 
 function config_update_system() {
@@ -26,8 +26,69 @@ function config_update_system() {
     echo "done :-)"
 }
 
+#***************************[nano]********************************************
+# 2019 09 09
+
+alias config_nano="nano_config"
+function nano_config() {
+
+    # print help
+    if [ "$1" == "-h" ]; then
+        echo "$FUNCNAME <filename>"
+
+        return
+    fi
+    if [ "$1" == "--help" ]; then
+        echo "$FUNCNAME needs 1 parameter"
+        echo "     #1: full path of original file"
+        echo "This function executes nano to modify the given config file."
+        echo "Before and after the operation a backup-file will be created."
+
+        return
+    fi
+
+    # check parameter
+    if [ $# -ne 1 ]; then
+        echo "$FUNCNAME: Parameter Error."
+        $FUNCNAME --help
+        return -1
+    fi
+
+    # call the general modification function
+    _config_file_modify "$1"
+}
+
+alias config_nano_restore="nano_config_restore"
+function nano_config_restore() {
+
+    # print help
+    if [ "$1" == "-h" ]; then
+        echo "$FUNCNAME <filename>"
+
+        return
+    fi
+    if [ "$1" == "--help" ]; then
+        echo "$FUNCNAME needs 1 parameter"
+        echo "     #1: full path of original file"
+        echo "This function restores the formerly modified config file."
+        echo "The related backup-files will be removed!"
+
+        return
+    fi
+
+    # check parameter
+    if [ $# -ne 1 ]; then
+        echo "$FUNCNAME: Parameter Error."
+        $FUNCNAME --help
+        return -1
+    fi
+
+    # call the general modification function
+    _config_file_restore "$1"
+}
+
 #***************************[inputrc]*****************************************
-# 2019 09 08
+# 2019 09 09
 
 function config_bash_search() {
 
@@ -48,13 +109,13 @@ function config_bash_search() {
         { print $0 }
     '
 
-    _config_file_modify_awk "$FILENAME_CONFIG" "$AWK_STRING" "backup-once"
+    _config_file_modify "$FILENAME_CONFIG" "$AWK_STRING" "backup-once"
 }
 
-#function config_bash_search_restore() {
-#
-#    FILENAME_CONFIG="/etc/inputrc"
-#
-#    _config_file_restore "$FILENAME_CONFIG"
-#}
+function config_bash_search_restore() {
+
+    FILENAME_CONFIG="/etc/inputrc"
+
+    _config_file_restore "$FILENAME_CONFIG" "backup-once"
+}
 
