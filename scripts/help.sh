@@ -33,6 +33,9 @@ function config_help_all() {
     echo -n "  "; echo "config_help"
     echo -n "  "; config_help_all -h
     echo ""
+    echo "global functions"
+    echo -n "  "; echo "config_update_system"
+    echo ""
     echo "setup config files"
     echo -n "  "; echo "config_bash_search"
     echo ""
@@ -52,6 +55,9 @@ function config_help() {
     echo "help functions"
     echo -n "  "; echo "config_help"
     echo -n "  "; config_help_all -h
+    echo ""
+    echo "global functions"
+    echo -n "  "; echo "config_update_system"
     echo ""
     echo "setup config files"
     echo -n "  "; echo "config_bash_search"
