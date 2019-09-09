@@ -40,6 +40,8 @@ export EDITOR='nano -w'
 
 
 #***************************[source]******************************************
-# 2019 04 21
+# 2019 09 08
 
+. ${CONFIG_PATH}scripts/functions.sh
+. ${CONFIG_PATH}scripts/config.sh
 . ${CONFIG_PATH}scripts/help.sh
