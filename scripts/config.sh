@@ -7,7 +7,7 @@ function config_bash_search() {
 
     AWK_STRING='
         # backward search
-        $0 ~ /^# "\e\[5~": history-search-backward/ {
+        $0 ~ /^# "\\e\[5~": history-search-backward/ {
           print "# [COMMENT]: ",$0
           $0 = "\"\\e[5~\": history-search-backward"
         }
