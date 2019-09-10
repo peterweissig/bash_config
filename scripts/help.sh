@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2019 09 09
+# 2019 09 10
 
 function config_help_all() {
 
@@ -30,26 +30,27 @@ function config_help_all() {
     echo "### $FUNCNAME ###"
     echo ""
     echo "help"
-    echo -n "  "; echo "config_help"
+    echo -n "  "; echo "config_help  #no help"
     echo -n "  "; config_help_all -h
     echo ""
     echo "global functions"
-    echo -n "  "; echo "config_update_system"
+    echo -n "  "; echo "config_update_system  #no help"
     echo -n "  "; nano_config -h
     echo -n "  "; nano_config_restore -h
     echo ""
     echo "setup config files"
-    echo -n "  "; echo "config_bash_search(_restore)"
+    echo -n "  "; echo "config_bash_search(_restore)  #no help"
     echo ""
     echo "internal"
     echo -n "  "; _config_file_modify -h
     echo -n "  "; _config_file_restore -h
     echo -n "  "; _config_file_return_last -h
+    echo -n "  "; _config_install_list -h
     echo ""
 }
 
 #***************************[help]********************************************
-# 2019 09 09
+# 2019 09 10
 
 function config_help() {
 
@@ -57,15 +58,15 @@ function config_help() {
     echo "### $FUNCNAME ###"
     echo ""
     echo "help functions"
-    echo -n "  "; echo "config_help"
+    echo -n "  "; echo "config_help  #no help"
     echo -n "  "; config_help_all -h
     echo ""
     echo "global functions"
-    echo -n "  "; echo "config_update_system"
+    echo -n "  "; echo "config_update_system  #no help"
     echo -n "  "; nano_config -h
     echo -n "  "; nano_config_restore -h
     echo ""
     echo "setup config files"
-    echo -n "  "; echo "config_bash_search(_restore)"
+    echo -n "  "; echo "config_bash_search(_restore)  #no help"
     echo ""
 }
