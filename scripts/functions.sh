@@ -386,13 +386,7 @@ function _config_install_list() {
     for package in $1; do
         # check current state of package
         package_info="$(dpkg-query --show --showformat='${db:Status-Abbrev}' \
-          "$package")"
-        if [ $? -ne 0 ]; then
-            if [ "$verbose" -ne 0 ]; then
-                echo "$FUNCNAME: Error around package \"$package\"."
-            fi
-            continue
-        fi
+          "$package" 2> /dev/null)"
 
         if [ "${package_info:0:2}" == "ii" ]; then
             # nothing todo
@@ -404,7 +398,7 @@ function _config_install_list() {
             if [ "$verbose" -ne 0 ] || [ "$answer" != "a" ]; then
                 echo "  Package \"$package\" is missing."
                 if [ "$answer" != "a" ]; then
-                    echo "  Try to install it? (y/N/all)";
+                    echo -n "  Try to install it ? (No/yes/all) "
                     read answer
 
                     # check if answer was "yes"
