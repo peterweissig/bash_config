@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #***************************[apt]*********************************************
 # 2019 09 08
 
@@ -25,6 +27,7 @@ function config_update_system() {
     echo ""
     echo "done :-)"
 }
+
 
 #***************************[nano]********************************************
 # 2019 09 09
@@ -87,6 +90,7 @@ function nano_config_restore() {
     _config_file_restore "$1"
 }
 
+
 #***************************[inputrc]*****************************************
 # 2019 09 09
 
@@ -119,3 +123,29 @@ function config_bash_search_restore() {
     _config_file_restore "$FILENAME_CONFIG" "backup-once"
 }
 
+
+#***************************[sources.list]************************************
+# 2019 09 10
+
+function config_source_list_to_multiverse() {
+
+    FILENAME_CONFIG="/etc/apt/sources.list"
+
+    AWK_STRING='
+        # append restricted, universe and multiverse to all sources
+        $0 ~ /main$/ {
+          $0 = $0 restricted universe multiverse
+        }
+
+        { print $0 }
+    '
+
+    _config_file_modify "$FILENAME_CONFIG" "$AWK_STRING" "backup-once"
+}
+
+function config_source_list_to_multiverse_restore() {
+
+    FILENAME_CONFIG="/etc/apt/sources.list"
+
+    _config_file_restore "$FILENAME_CONFIG" "backup-once"
+}
