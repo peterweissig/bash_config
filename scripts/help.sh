@@ -31,21 +31,19 @@ function config_help_all() {
     echo ""
     echo "help"
     echo -n "  "; echo "config_help  #no help"
-    echo -n "  "; config_help_all -h
+    echo -n "  "; $FUNCNAME -h
     echo ""
-    echo "global functions"
+    echo "install"
     echo -n "  "; echo "config_update_system  #no help"
-    echo -n "  "; nano_config -h
-    echo -n "  "; nano_config_restore -h
+    echo -n "  "; _config_install_list -h
     echo ""
     echo "setup config files"
+    echo -n "  "; nano_config -h
+    echo -n "  "; nano_config_restore -h
     echo -n "  "; echo "config_bash_search(_restore)  #no help"
-    echo ""
-    echo "internal"
     echo -n "  "; _config_file_modify -h
     echo -n "  "; _config_file_restore -h
     echo -n "  "; _config_file_return_last -h
-    echo -n "  "; _config_install_list -h
     echo ""
 }
 
@@ -58,15 +56,15 @@ function config_help() {
     echo "### $FUNCNAME ###"
     echo ""
     echo "help functions"
-    echo -n "  "; echo "config_help  #no help"
+    echo -n "  "; echo "$FUNCNAME  #no help"
     echo -n "  "; config_help_all -h
     echo ""
-    echo "global functions"
+    echo "install"
     echo -n "  "; echo "config_update_system  #no help"
-    echo -n "  "; nano_config -h
-    echo -n "  "; nano_config_restore -h
     echo ""
     echo "setup config files"
+    echo -n "  "; nano_config -h
+    echo -n "  "; nano_config_restore -h
     echo -n "  "; echo "config_bash_search(_restore)  #no help"
     echo ""
 }
