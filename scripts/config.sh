@@ -92,7 +92,7 @@ function nano_config_restore() {
 
 
 #***************************[inputrc]*****************************************
-# 2019 09 09
+# 2019 09 10
 
 function config_bash_search() {
 
@@ -106,7 +106,7 @@ function config_bash_search() {
         }
         # forward search
         $0 ~ /^# "\\e\[6~": history-search-forward/ {
-          print "# [COMMENT]:",$0
+          print "# [COMMENT]: ",$0
           $0 = "\"\\e[6~\": history-search-forward"
         }
 
@@ -133,8 +133,9 @@ function config_source_list_to_multiverse() {
 
     AWK_STRING='
         # append restricted, universe and multiverse to all sources
-        $0 ~ /main$/ {
-          $0 = $0 restricted universe multiverse
+        $0 ~ /^deb.+main$/ {
+          print "# [COMMENT]: ",$0
+          $0 = $0" restricted universe multiverse"
         }
 
         { print $0 }
