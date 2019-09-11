@@ -335,7 +335,7 @@ function _config_install_list() {
 
     # print help
     if [ "$1" == "-h" ]; then
-        echo "$FUNCNAME <package-list>"
+        echo "$FUNCNAME <package-list> [<verbosity>] [<auto-answer>]"
 
         return
     fi
@@ -362,6 +362,7 @@ function _config_install_list() {
 
     # init variables
     verbose="1"
+    auto_answer=""
     answer=""
 
     if [ $# -gt 1 ]; then
@@ -376,7 +377,7 @@ function _config_install_list() {
 
     if [ $# -gt 2 ]; then
         if [ "$3" == "-y" ] || [ "$3" == "--yes" ]; then
-            answer="a"
+            auto_answer="--assume-yes"
         elif [ "$3" != "" ]; then
             echo "$FUNCNAME: Parameter Error."
             $FUNCNAME --help
@@ -418,7 +419,7 @@ function _config_install_list() {
 
             # install
             if [ "$answer" == "y" ] || [ "$answer" == "a" ]; then
-                sudo apt install "$package"
+                sudo apt install "$package" $auto_answer
             fi
         fi
     done
