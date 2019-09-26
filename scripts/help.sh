@@ -47,6 +47,9 @@ function config_help_all() {
     echo -n "  "; _config_file_restore -h
     echo -n "  "; _config_file_return_last -h
     echo ""
+    echo "other"
+    echo -n "  "; config_clear_home -h
+    echo ""
 }
 
 #***************************[help]********************************************
@@ -69,5 +72,8 @@ function config_help() {
     echo -n "  "; nano_config_restore -h
     echo -n "  "; echo "config_bash_search(_restore)"
     echo -n "  "; echo "config_source_list_to_multiverse(_restore)"
+    echo ""
+    echo "other"
+    echo -n "  "; config_clear_home -h
     echo ""
 }

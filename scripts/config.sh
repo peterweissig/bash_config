@@ -176,3 +176,66 @@ function config_source_list_to_multiverse_restore() {
 
     _config_file_restore "$FILENAME_CONFIG" "backup-once"
 }
+
+#***************************[clear home]**************************************
+# 2019 09 26
+
+function config_clear_home() {
+
+    # print help
+    if [ "$1" == "-h" ]; then
+        echo "$FUNCNAME [<username>]"
+
+        return
+    fi
+    if [ "$1" == "--help" ]; then
+        echo "$FUNCNAME needs 0-1 parameters"
+        echo "     #1: username"
+        echo "This function removes unused folders from the home of the"
+        echo "given user"
+
+        return
+    fi
+
+    # check parameter
+    if [ $# -gt 1 ]; then
+        echo "$FUNCNAME: Parameter Error."
+        $FUNCNAME --help
+        return -1
+    fi
+
+    if [ $# -lt 1 ]; then
+        home="$HOME"
+    else
+        home="/home/$1/"
+    fi
+
+    # check if home of user exists
+    if [ ! -d "$home" ]; then
+        echo "$FUNCNAME: directory \"$home\" does not exist!"
+        return -2
+    fi
+
+    # list of folders to be removed
+    list="Dokumente/ Documents/ \
+          Musik/ Music/         \
+          Bilder/ Pictures/     \
+          Videos/ Video/        \
+          Vorlagen/ Templates/  \
+          Öffentlich/ Public/"
+
+    # iterate over all folders
+    for dir in $list; do
+        path="${home}${dir}"
+        if [ ! -d "$path" ]; then
+            continue;
+        fi
+
+        if [ "$(ls "$path" | wc -w)" -gt 0 ]; then
+            echo "warning, directory \"$dir\" is not empty"
+        else
+            echo "removing \"$dir\""
+            rmdir "$path"
+        fi
+    done
+}
