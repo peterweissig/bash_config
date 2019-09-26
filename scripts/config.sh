@@ -190,9 +190,9 @@ function config_clear_home() {
     fi
     if [ "$1" == "--help" ]; then
         echo "$FUNCNAME needs 0-1 parameters"
-        echo "     #1: username"
-        echo "This function removes unused folders from the home of the"
-        echo "given user"
+        echo "    [#1:]username"
+        echo "This function removes unused folders from the home-directory."
+        echo "If no username is given, the current home-directory is used."
 
         return
     fi
@@ -205,7 +205,7 @@ function config_clear_home() {
     fi
 
     if [ $# -lt 1 ]; then
-        home="$HOME"
+        home="${HOME}/"
     else
         home="/home/$1/"
     fi
