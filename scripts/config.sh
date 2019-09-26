@@ -92,10 +92,17 @@ function nano_config_restore() {
 
 
 #***************************[inputrc]*****************************************
-# 2019 09 10
+# 2019 09 26
 
 function config_bash_search() {
 
+    # print help and check for user agreement
+    _config_simple_parameter_check "$FUNCNAME" "$1" \
+      "enables searching through the bash-history using" \
+      "page-up/page-down keys."
+    if [ $? -ne 0 ]; then return -1; fi
+
+    # Do the configuration
     FILENAME_CONFIG="/etc/inputrc"
 
     AWK_STRING='
@@ -118,6 +125,12 @@ function config_bash_search() {
 
 function config_bash_search_restore() {
 
+    # print help and check for user agreement
+    _config_simple_parameter_check "$FUNCNAME" "$1" \
+      "restores the old behaviour for searching through the bash-history."
+    if [ $? -ne 0 ]; then return -1; fi
+
+    # Undo the configuration
     FILENAME_CONFIG="/etc/inputrc"
 
     _config_file_restore "$FILENAME_CONFIG" "backup-once"
@@ -125,12 +138,19 @@ function config_bash_search_restore() {
 
 
 #***************************[sources.list]************************************
-# 2019 09 10
+# 2019 09 26
 
 function config_source_list_to_multiverse() {
 
     FILENAME_CONFIG="/etc/apt/sources.list"
 
+    # print help and check for user agreement
+    _config_simple_parameter_check "$FUNCNAME" "$1" \
+      "appends restricted, universe and multiverse to all sources." \
+      "  (only changing $FILENAME_CONFIG)"
+    if [ $? -ne 0 ]; then return -1; fi
+
+    # Do the configuration
     AWK_STRING='
         # append restricted, universe and multiverse to all sources
         $0 ~ /^deb.+main$/ {
@@ -146,6 +166,12 @@ function config_source_list_to_multiverse() {
 
 function config_source_list_to_multiverse_restore() {
 
+    # print help and check for user agreement
+    _config_simple_parameter_check "$FUNCNAME" "$1" \
+      "restores the old behaviour for sources.list."
+    if [ $? -ne 0 ]; then return -1; fi
+
+    # Undo the configuration
     FILENAME_CONFIG="/etc/apt/sources.list"
 
     _config_file_restore "$FILENAME_CONFIG" "backup-once"

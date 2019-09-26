@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2019 09 10
+# 2019 09 26
 
 function config_help_all() {
 
@@ -32,6 +32,7 @@ function config_help_all() {
     echo "help"
     echo -n "  "; echo "config_help  #no help"
     echo -n "  "; $FUNCNAME -h
+    echo -n "  "; _config_simple_parameter_check -h
     echo ""
     echo "install"
     echo -n "  "; echo "config_update_system  #no help"
@@ -40,7 +41,8 @@ function config_help_all() {
     echo "setup config files"
     echo -n "  "; nano_config -h
     echo -n "  "; nano_config_restore -h
-    echo -n "  "; echo "config_bash_search(_restore)  #no help"
+    echo -n "  "; echo "config_bash_search(_restore)"
+    echo -n "  "; echo "config_source_list_to_multiverse(_restore)"
     echo -n "  "; _config_file_modify -h
     echo -n "  "; _config_file_restore -h
     echo -n "  "; _config_file_return_last -h
@@ -48,7 +50,7 @@ function config_help_all() {
 }
 
 #***************************[help]********************************************
-# 2019 09 10
+# 2019 09 26
 
 function config_help() {
 
@@ -65,6 +67,7 @@ function config_help() {
     echo "setup config files"
     echo -n "  "; nano_config -h
     echo -n "  "; nano_config_restore -h
-    echo -n "  "; echo "config_bash_search(_restore)  #no help"
+    echo -n "  "; echo "config_bash_search(_restore)"
+    echo -n "  "; echo "config_source_list_to_multiverse(_restore)"
     echo ""
 }
