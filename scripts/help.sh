@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2019 09 26
+# 2019 09 29
 
 function config_help_all() {
 
@@ -34,6 +34,9 @@ function config_help_all() {
     echo -n "  "; $FUNCNAME -h
     echo -n "  "; _config_simple_parameter_check -h
     echo ""
+    echo "info"
+    echo -n "  "; config_info -h
+    echo ""
     echo "install"
     echo -n "  "; echo "config_update_system  #no help"
     echo -n "  "; _config_install_list -h
@@ -53,7 +56,7 @@ function config_help_all() {
 }
 
 #***************************[help]********************************************
-# 2019 09 26
+# 2019 09 29
 
 function config_help() {
 
@@ -63,6 +66,9 @@ function config_help() {
     echo "help functions"
     echo -n "  "; echo "$FUNCNAME  #no help"
     echo -n "  "; config_help_all -h
+    echo ""
+    echo "info"
+    echo -n "  "; config_info -h
     echo ""
     echo "install"
     echo -n "  "; echo "config_update_system  #no help"
