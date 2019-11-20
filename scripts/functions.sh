@@ -35,6 +35,63 @@ function _config_file_modify() {
         return -1
     fi
 
+    # init variables
+    param_filename="$1"
+    #param_script="$2"
+    param_flag="$3"
+    #param_header="$4"
+
+    if [ $# -gt 2 ]; then
+        if [ "$param_flag" != "backup-once" ] && \
+          [ "$param_flag" == "create-config" ] && \
+          [ "$param_flag" != "normal" ]; then
+            echo "$FUNCNAME: Parameter Error."
+            $FUNCNAME --help
+            return -1
+        fi
+    fi
+
+    # call full version of modification script
+    shift
+    _config_file_modify_full "$param_filename" "" "$@"
+
+}
+
+# 2019 11 20
+function _config_file_modify_full() {
+
+    # print help
+    if [ "$1" == "-h" ]; then
+        echo "$FUNCNAME <filename> [<subdir>] [<script>] [<flag>] [<header>]"
+
+        return
+    fi
+    if [ "$1" == "--help" ]; then
+        echo "$FUNCNAME needs 1-5 parameters"
+        echo "     #1: full path of original file"
+        echo "    [#2:]additional subdirectory for storing backup"
+        echo "    [#3:]a valid awk script"
+        echo "         if not set (\"\"), the editor nano will be executed"
+        echo "    [#4:]flag"
+        echo "         \"normal\"        ... normal operation (default)"
+        echo "         \"backup-once\"   ... fails if backup already exists"
+        echo "         \"create-config\" ... fails if file already exists"
+        echo "    [#5:]additional header (default date and username)"
+        echo "         if not set (\"\"), no header will be added"
+        echo "This function modifies the given config file - "
+        echo "either by running the given awk script or by executing nano."
+        echo "Before and after the operation a backup-file will be created."
+
+        return
+    fi
+
+    # check parameter
+    if [ $# -lt 1 ] || [ $# -gt 5 ]; then
+        echo "$FUNCNAME: Parameter Error."
+        $FUNCNAME --help
+        return -1
+    fi
+
     # check for other repos
     if [ "$SOURCED_BASH_FILE" == "" ]; then
         echo -n "$FUNCNAME: Can't find file-functions. Did you call "
@@ -44,14 +101,25 @@ function _config_file_modify() {
 
     # init variables
     param_filename="$1"
-    param_script="$2"
-    param_flag="$3"
-    param_header="$4"
+    param_subdir="$2"
+    param_script="$3"
+    param_flag="$4"
+    param_header="$5"
+
+    config_path_backup="$CONFIG_PATH_BACKUP"
+    if [ "$config_path_backup" != "" ] && \
+      [ "${config_path_backup: -1}" != "/" ]; then
+        config_path_backup="${config_path_backup}/"
+    fi
+    config_path_backup="${config_path_backup}${param_subdir}"
+    if [ "$config_path_backup" != "" ] && \
+      [ "${config_path_backup: -1}" != "/" ]; then
+        config_path_backup="${config_path_backup}/"
+    fi
 
     flag_backup_once="0"
     flag_create_config="0"
-
-    if [ $# -gt 2 ]; then
+    if [ $# -gt 3 ]; then
         if [ "$param_flag" == "backup-once" ]; then
             flag_backup_once="1"
         elif [ "$param_flag" == "create-config" ]; then
@@ -71,7 +139,7 @@ function _config_file_modify() {
 
     # check for already existing backup
     if [ "$flag_backup_once" -ne 0 ]; then
-        find_result="$(find "$CONFIG_PATH_BACKUP" -regextype sed \
+        find_result="$(find "$config_path_backup" -regextype sed \
           -regex ".*/[0-9_]*${filebase_simple}[0-9_]*" -print -quit)"
         if [ $? -ne 0 ]; then return -3; fi
 
@@ -86,7 +154,7 @@ function _config_file_modify() {
     # create a backup before the operation
     if [ "$flag_create_config" -eq 0 ]; then
         #// check file and create a backup before applying awk-script
-        _file_backup_base "$param_filename" "$CONFIG_PATH_BACKUP" \
+        _file_backup_base "$param_filename" "$config_path_backup" \
           "suffix" "--yes"
         if [ $? -ne 0 ]; then return -5; fi
     else
@@ -129,7 +197,7 @@ function _config_file_modify() {
     fi
 
     #// create header
-    if [ $# -lt 4 ]; then
+    if [ $# -lt 5 ]; then
         header="$(
             echo "# $(date): $USER edited \"$(realpath "$param_filename")\""
             echo "#"
@@ -159,12 +227,12 @@ function _config_file_modify() {
     if [ $? -ne 0 ]; then return -10; fi
 
     #// create a backup after the operation
-    _file_backup_base "$param_filename" "$CONFIG_PATH_BACKUP" \
+    _file_backup_base "$param_filename" "$config_path_backup" \
       "suffix" "--yes"
     if [ $? -ne 0 ]; then return -11; fi
 }
 
-# 2019 09 09
+# 2019 11 20
 function _config_file_restore() {
 
     # print help
