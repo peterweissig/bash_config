@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2019 09 29
+# 2019 11 20
 
 function config_help_all() {
 
@@ -45,7 +45,7 @@ function config_help_all() {
     echo -n "  "; nano_config -h
     echo -n "  "; nano_config_restore -h
     echo -n "  "; echo "config_bash_search(_restore)"
-    echo -n "  "; echo "config_source_list_to_multiverse(_restore)"
+    echo -n "  "; echo "config_sources_add_multiverse(_restore)"
     echo -n "  "; _config_file_modify -h
     echo -n "  "; _config_file_restore -h
     echo -n "  "; _config_file_return_last -h
@@ -56,7 +56,7 @@ function config_help_all() {
 }
 
 #***************************[help]********************************************
-# 2019 09 29
+# 2019 11 20
 
 function config_help() {
 
@@ -77,7 +77,7 @@ function config_help() {
     echo -n "  "; nano_config -h
     echo -n "  "; nano_config_restore -h
     echo -n "  "; echo "config_bash_search(_restore)"
-    echo -n "  "; echo "config_source_list_to_multiverse(_restore)"
+    echo -n "  "; echo "config_sources_add_multiverse(_restore)"
     echo ""
     echo "other"
     echo -n "  "; config_clear_home -h

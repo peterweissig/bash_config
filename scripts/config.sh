@@ -138,9 +138,9 @@ function config_bash_search_restore() {
 
 
 #***************************[sources.list]************************************
-# 2019 09 26
+# 2019 11 20
 
-function config_source_list_to_multiverse() {
+function config_source_list_add_multiverse() {
 
     FILENAME_CONFIG="/etc/apt/sources.list"
 
@@ -149,6 +149,17 @@ function config_source_list_to_multiverse() {
       "appends restricted, universe and multiverse to all sources." \
       "  (only changing $FILENAME_CONFIG)"
     if [ $? -ne 0 ]; then return -1; fi
+
+    # check already set
+    temp="$(cat "$FILENAME_CONFIG" | grep --extended-regexp "^deb" | \
+      grep --extended-regexp "(multiverse|universe|restricted)")"
+    if [ "$(echo "$temp" | wc -w)" -gt 0 ]; then
+        echo -n "$FILENAME_CONFIG: multiverse, universe or restricted "
+        echo "is already set!"
+        echo ""
+        echo "$temp"
+        return -2
+    fi
 
     # Do the configuration
     AWK_STRING='
@@ -164,7 +175,7 @@ function config_source_list_to_multiverse() {
     _config_file_modify "$FILENAME_CONFIG" "$AWK_STRING" "backup-once"
 }
 
-function config_source_list_to_multiverse_restore() {
+function config_source_list_add_multiverse_restore() {
 
     # print help and check for user agreement
     _config_simple_parameter_check "$FUNCNAME" "$1" \
@@ -176,6 +187,7 @@ function config_source_list_to_multiverse_restore() {
 
     _config_file_restore "$FILENAME_CONFIG" "backup-once"
 }
+
 
 #***************************[clear home]**************************************
 # 2019 09 26
