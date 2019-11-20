@@ -141,12 +141,16 @@ function _config_file_modify() {
     #// copy file back to original position and remove temp file
     if [ "$(stat -c '%U' "$param_filename")" == "root" ]; then
         (
-            echo "$header"
+            if [ "$header" != "" ]; then
+                echo "$header"
+            fi
             cat "$temp_file"
         ) | sudo tee "$param_filename" > "/dev/null"
     else
         (
-            echo "$header"
+            if [ "$header" != "" ]; then
+                echo "$header"
+            fi
             cat "$temp_file"
         ) > "$param_filename"
     fi
