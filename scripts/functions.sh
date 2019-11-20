@@ -1,8 +1,7 @@
 #!/bin/bash
 
 #***************************[modify config files]*****************************
-# 2019 09 09
-
+# 2019 11 20
 function _config_file_modify() {
 
     # print help
@@ -44,15 +43,20 @@ function _config_file_modify() {
     fi
 
     # init variables
+    param_filename="$1"
+    param_script="$2"
+    param_flag="$3"
+    param_header="$4"
+
     flag_backup_once="0"
     flag_create_config="0"
 
     if [ $# -gt 2 ]; then
-        if [ "$3" == "backup-once" ]; then
+        if [ "$param_flag" == "backup-once" ]; then
             flag_backup_once="1"
-        elif [ "$3" == "create-config" ]; then
+        elif [ "$param_flag" == "create-config" ]; then
             flag_create_config="1"
-        elif [ "$3" != "normal" ]; then
+        elif [ "$param_flag" != "normal" ]; then
             echo "$FUNCNAME: Parameter Error."
             $FUNCNAME --help
             return -1
@@ -60,9 +64,8 @@ function _config_file_modify() {
     fi
 
     # simplify config-file name
-    filename="$1"
-    filepath="$(dirname  "$filename")"
-    filebase="$(basename "$filename")"
+    filepath="$(dirname  "$param_filename")"
+    filebase="$(basename "$param_filename")"
     filebase_simple="$(_file_backup_simplify_name "$filebase")"
     if [ $? -ne 0 ]; then return -2; fi
 
@@ -73,7 +76,8 @@ function _config_file_modify() {
         if [ $? -ne 0 ]; then return -3; fi
 
         if [ "$(echo "$find_result" | wc -w)" != 0 ]; then
-            echo "$FUNCNAME: backup for file ($filename) already exists!"
+            echo -n "$FUNCNAME: backup for file ($param_filename) "
+            echo "already exists!"
             echo "  $find_result"
             return -4
         fi
@@ -82,11 +86,12 @@ function _config_file_modify() {
     # create a backup before the operation
     if [ "$flag_create_config" -eq 0 ]; then
         #// check file and create a backup before applying awk-script
-        _file_backup_base "$filename" "$CONFIG_PATH_BACKUP" "suffix" "--yes"
+        _file_backup_base "$param_filename" "$CONFIG_PATH_BACKUP" \
+          "suffix" "--yes"
         if [ $? -ne 0 ]; then return -5; fi
     else
-        if [ -e "$filename" ]; then
-            echo "File \"$filename\" already exists!"
+        if [ -e "$param_filename" ]; then
+            echo "File \"$param_filename\" already exists!"
             return -6
         fi
     fi
@@ -95,61 +100,63 @@ function _config_file_modify() {
     temp_file="${CONFIG_PATH_BACKUP}${filebase_simple}_temp"
 
     if [ "$flag_create_config" -eq 0 ]; then
-        if [ "$2" == "" ]; then
-            cp "$filename" "$temp_file"
+        if [ "$param_script" == "" ]; then
+            cp "$param_filename" "$temp_file"
             nano "$temp_file"
         else
-            cat "$filename" | awk "$2" > "$temp_file"
+            cat "$param_filename" | awk "$param_script" > "$temp_file"
         fi
         if [ $? -ne 0 ]; then return -7; fi
 
         #// check if file was changed
-        if [ "$(diff --brief "$temp_file" "$filename")" == "" ]; then
-            echo "File \"$filename\" not changed!"
+        if [ "$(diff --brief "$temp_file" "$param_filename")" == "" ]; then
+            echo "File \"$param_filename\" not changed!"
             rm "$temp_file"
 
             if [ "$flag_create_config" -eq 0 ]; then
-                filename_last="$(_config_file_return_last "$filename")";
-                if [ -e "$filename_last" ]; then
-                    echo "rm \"$filename_last\""
-                    rm "$filename_last"
+                filename_last="$(_config_file_return_last \
+                  "$param_filename")";
+                if [ -e "$param_filename_last" ]; then
+                    echo "rm \"$param_filename_last\""
+                    rm "$param_filename_last"
                 fi
             fi
             return
         fi
     else
-        awk "$2" > "$temp_file"
+        awk "$param_script" > "$temp_file"
         if [ $? -ne 0 ]; then return -8; fi
     fi
 
     #// create header
     if [ $# -lt 4 ]; then
         header="$(
-            echo "# $(date): $USER edited \"$(realpath "$filename")\""
+            echo "# $(date): $USER edited \"$(realpath "$param_filename")\""
             echo "#"
         )"
     else
-        header="$3"
+        header="$param_header"
     fi
 
     #// copy file back to original position and remove temp file
-    if [ "$(stat -c '%U' "$filename")" == "root" ]; then
+    if [ "$(stat -c '%U' "$param_filename")" == "root" ]; then
         (
             echo "$header"
             cat "$temp_file"
-        ) | sudo tee "$filename" > "/dev/null"
+        ) | sudo tee "$param_filename" > "/dev/null"
     else
         (
             echo "$header"
             cat "$temp_file"
-        ) > "$filename"
+        ) > "$param_filename"
     fi
     if [ $? -ne 0 ]; then return -9; fi
     rm "$temp_file"
     if [ $? -ne 0 ]; then return -10; fi
 
     #// create a backup after the operation
-    _file_backup_base "$filename" "$CONFIG_PATH_BACKUP" "suffix" "--yes"
+    _file_backup_base "$param_filename" "$CONFIG_PATH_BACKUP" \
+      "suffix" "--yes"
     if [ $? -ne 0 ]; then return -11; fi
 }
 
@@ -193,15 +200,18 @@ function _config_file_restore() {
     fi
 
     # init variables
+    param_filename="$1"
+    param_flag="$2"
+
     flag_backup_once="0"
     flag_create_config="0"
 
     if [ $# -gt 2 ]; then
-        if [ "$3" == "backup-once" ]; then
+        if [ "$param_flag" == "backup-once" ]; then
             flag_backup_once="1"
-        elif [ "$3" == "create-config" ]; then
+        elif [ "$param_flag" == "create-config" ]; then
             flag_create_config="1"
-        elif [ "$3" != "normal" ]; then
+        elif [ "$param_flag" != "normal" ]; then
             echo "$FUNCNAME: Parameter Error."
             $FUNCNAME --help
             return -1
@@ -209,9 +219,8 @@ function _config_file_restore() {
     fi
 
     # simplify config-file name
-    filename="$1"
-    filepath="$(dirname  "$filename")"
-    filebase="$(basename "$filename")"
+    filepath="$(dirname  "$param_filename")"
+    filebase="$(basename "$param_filename")"
     filebase_simple="$(_file_backup_simplify_name "$filebase")"
     if [ $? -ne 0 ]; then return -2; fi
 
@@ -221,7 +230,7 @@ function _config_file_restore() {
     if [ $? -ne 0 ]; then return -3; fi
 
     if [ "$(echo "$find_result" | wc -w)" -eq 0 ]; then
-        echo "$FUNCNAME: no backup for file ($filename)!"
+        echo "$FUNCNAME: no backup for file ($param_filename)!"
         return -4
     fi
 
@@ -229,7 +238,7 @@ function _config_file_restore() {
     if [ "$flag_create_config" -ne 0 ]; then
         if [ "$(echo "$find_result" | wc -l)" -ne 1 ]; then
             echo "$FUNCNAME: there must be exactly one backup for file"
-            echo "  $filename"
+            echo "  $param_filename"
             return -5
         fi
 
@@ -237,45 +246,45 @@ function _config_file_restore() {
         if [ "$flag_backup_once" -ne 0 ]; then
             if [ "$(echo "$find_result" | wc -l)" -ne 2 ]; then
                 echo "$FUNCNAME: there must be exactly two backups for file"
-                echo "  $filename"
+                echo "  $param_filename"
                 return -5
             fi
         else
             if [ "$(echo "$find_result" | wc -l)" -lt 2 ]; then
                 echo "$FUNCNAME: there must be at least two backups for file"
-                echo "  $filename"
+                echo "  $param_filename"
                 return -5
             fi
         fi
 
         # removed last file
-        filename_last="$(_config_file_return_last "$filename")";
+        filename_last="$(_config_file_return_last "$param_filename")";
         if [ $? -ne 0 ]; then return -6; fi
-        if [ ! -e "$filename_last" ]; then
+        if [ ! -e "$param_filename_last" ]; then
             return -6
         fi
-        echo "rm \"$filename_last\""
-        rm "$filename_last"
+        echo "rm \"$param_filename_last\""
+        rm "$param_filename_last"
     fi
 
     # get last file
-    filename_last="$(_config_file_return_last "$filename")";
+    filename_last="$(_config_file_return_last "$param_filename")";
     if [ $? -ne 0 ]; then return -7; fi
-    if [ ! -e "$filename_last" ]; then
+    if [ ! -e "$param_filename_last" ]; then
         return -7
     fi
 
     #// move file back to original position
-    if [ "$(stat -c '%U' "$filename")" == "root" ]; then
-        echo "sudo mv \"$filename_last\" \"$filename\""
-        sudo mv "$filename_last" "$filename"
+    if [ "$(stat -c '%U' "$param_filename")" == "root" ]; then
+        echo "sudo mv \"$param_filename_last\" \"$param_filename\""
+        sudo mv "$param_filename_last" "$param_filename"
     else
-        echo "mv \"$filename_last\" \"$filename\""
-        mv "$filename_last" "$filename"
+        echo "mv \"$param_filename_last\" \"$param_filename\""
+        mv "$param_filename_last" "$param_filename"
     fi
 }
 
-# 2019 09 08
+# 2019 11 20
 function _config_file_return_last() {
 
     # print help
@@ -307,10 +316,12 @@ function _config_file_return_last() {
         return -1
     fi
 
+    # init variables
+    param_filename="$1"
+
     # simplify config-file name
-    filename="$1"
-    filepath="$(dirname  "$filename")"
-    filebase="$(basename "$filename")"
+    filepath="$(dirname  "$param_filename")"
+    filebase="$(basename "$param_filename")"
     filebase_simple="$(_file_backup_simplify_name "$filebase")"
     if [ $? -ne 0 ]; then return -2; fi
 
