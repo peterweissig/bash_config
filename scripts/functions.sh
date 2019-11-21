@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[modify config files]*****************************
-# 2019 11 20
+# 2019 11 21
 function _config_file_modify() {
 
     # print help
@@ -43,7 +43,7 @@ function _config_file_modify() {
 
     if [ $# -gt 2 ]; then
         if [ "$param_flag" != "backup-once" ] && \
-          [ "$param_flag" == "create-config" ] && \
+          [ "$param_flag" != "create-config" ] && \
           [ "$param_flag" != "normal" ]; then
             echo "$FUNCNAME: Parameter Error."
             $FUNCNAME --help
@@ -57,7 +57,7 @@ function _config_file_modify() {
 
 }
 
-# 2019 11 20
+# 2019 11 21
 function _config_file_modify_full() {
 
     # print help
@@ -192,7 +192,7 @@ function _config_file_modify_full() {
             return
         fi
     else
-        awk "$param_script" > "$temp_file"
+        echo "" | awk "$param_script" > "$temp_file"
         if [ $? -ne 0 ]; then return -8; fi
     fi
 
@@ -206,8 +206,15 @@ function _config_file_modify_full() {
         header="$param_header"
     fi
 
+    #// check file owner
+    if [ "$flag_create_config" -eq 0 ]; then
+        temp_dir_or_file="$param_filename"
+    else
+        temp_dir_or_file="$filepath"
+    fi
+
     #// copy file back to original position and remove temp file
-    if [ "$(stat -c '%U' "$param_filename")" == "root" ]; then
+    if [ "$(stat -c '%U' "$temp_dir_or_file")" == "root" ]; then
         (
             if [ "$header" != "" ]; then
                 echo "$header"
