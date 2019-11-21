@@ -184,9 +184,9 @@ function _config_file_modify_full() {
             if [ "$flag_create_config" -eq 0 ]; then
                 filename_last="$(_config_file_return_last \
                   "$param_filename")";
-                if [ -e "$param_filename_last" ]; then
-                    echo "rm \"$param_filename_last\""
-                    rm "$param_filename_last"
+                if [ -e "$filename_last" ]; then
+                    echo "rm \"$filename_last\""
+                    rm "$filename_last"
                 fi
             fi
             return
@@ -239,7 +239,7 @@ function _config_file_modify_full() {
     if [ $? -ne 0 ]; then return -11; fi
 }
 
-# 2019 11 20
+# 2019 11 21
 function _config_file_restore() {
 
     # print help
@@ -285,7 +285,7 @@ function _config_file_restore() {
     flag_backup_once="0"
     flag_create_config="0"
 
-    if [ $# -gt 2 ]; then
+    if [ $# -gt 1 ]; then
         if [ "$param_flag" == "backup-once" ]; then
             flag_backup_once="1"
         elif [ "$param_flag" == "create-config" ]; then
@@ -335,31 +335,44 @@ function _config_file_restore() {
                 return -5
             fi
         fi
-
-        # removed last file
-        filename_last="$(_config_file_return_last "$param_filename")";
-        if [ $? -ne 0 ]; then return -6; fi
-        if [ ! -e "$param_filename_last" ]; then
-            return -6
-        fi
-        echo "rm \"$param_filename_last\""
-        rm "$param_filename_last"
     fi
 
-    # get last file
+    # remove last file
     filename_last="$(_config_file_return_last "$param_filename")";
-    if [ $? -ne 0 ]; then return -7; fi
-    if [ ! -e "$param_filename_last" ]; then
-        return -7
+    if [ $? -ne 0 ]; then return -6; fi
+    if [ ! -e "$filename_last" ]; then
+        return -6
     fi
+    echo "rm \"$filename_last\""
+    rm "$filename_last"
 
-    #// move file back to original position
-    if [ "$(stat -c '%U' "$param_filename")" == "root" ]; then
-        echo "sudo mv \"$param_filename_last\" \"$param_filename\""
-        sudo mv "$param_filename_last" "$param_filename"
+    # test for flags
+    if [ "$flag_create_config" -eq 0 ]; then
+
+        # get second last file
+        filename_last="$(_config_file_return_last "$param_filename")";
+        if [ $? -ne 0 ]; then return -7; fi
+        if [ ! -e "$filename_last" ]; then
+            return -7
+        fi
+
+        #// move file back to original position
+        if [ "$(stat -c '%U' "$param_filename")" == "root" ]; then
+            echo "sudo mv \"$filename_last\" \"$param_filename\""
+            sudo mv "$filename_last" "$param_filename"
+        else
+            echo "mv \"$filename_last\" \"$param_filename\""
+            mv "$filename_last" "$param_filename"
+        fi
     else
-        echo "mv \"$param_filename_last\" \"$param_filename\""
-        mv "$param_filename_last" "$param_filename"
+        #// remove original file
+        if [ "$(stat -c '%U' "$param_filename")" == "root" ]; then
+            echo "sudo rm \"$param_filename\""
+            sudo rm "$param_filename"
+        else
+            echo "rm \"$param_filename\""
+            rm "$param_filename"
+        fi
     fi
 }
 
