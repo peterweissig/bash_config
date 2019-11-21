@@ -46,6 +46,9 @@ function config_help_all() {
     echo -n "  "; nano_config_restore -h
     echo -n "  "; echo "config_bash_search(_restore)"
     echo -n "  "; echo "config_sources_add_multiverse(_restore)"
+    echo -n "  "; config_sources_aptcacher_set -h
+    echo -n "  "; config_sources_aptcacher_check -h
+    echo -n "  "; config_sources_aptcacher_unset -h
     echo -n "  "; _config_file_modify -h
     echo -n "  "; _config_file_restore -h
     echo -n "  "; _config_file_return_last -h
@@ -78,6 +81,7 @@ function config_help() {
     echo -n "  "; nano_config_restore -h
     echo -n "  "; echo "config_bash_search(_restore)"
     echo -n "  "; echo "config_sources_add_multiverse(_restore)"
+    echo -n "  "; echo "config_sources_aptcacher_(un)set"
     echo ""
     echo "other"
     echo -n "  "; config_clear_home -h
