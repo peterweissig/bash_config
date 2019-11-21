@@ -224,9 +224,6 @@ function config_source_list_aptcacher_set() {
         echo "$FUNCNAME: ip-address ($ipaddr) is not valid."
         return -2
     fi
-    if [ "$ipaddr" != "localhost" ]; then
-        ipaddr="http://${ipaddr}";
-    fi
 
     FILENAME_CONFIG="/etc/apt/sources.list"
     PATH_CONFIG="/etc/apt/sources.list.d/"
@@ -234,7 +231,7 @@ function config_source_list_aptcacher_set() {
     AWK_STRING="
         # update url of repositories
         \$0 ~ /^deb/ && \$0 !~ /:3142/ {
-          sub( /http:\/\// , \"${ipaddr}:3142/\" )
+          sub( /http:\/\// , \"&${ipaddr}:3142/\" )
         }
 
         { print \$0 }
