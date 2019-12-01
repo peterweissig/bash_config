@@ -529,7 +529,7 @@ function _config_install_list() {
 }
 
 #***************************[parameter]***************************************
-# 2019 09 26
+# 2019 12 01
 
 function _config_simple_parameter_check() {
 
@@ -573,7 +573,7 @@ function _config_simple_parameter_check() {
     # print simple help
     if [ "$argument" == "-h" ]; then
         echo "$func_name"
-        return
+        return 1
     fi
 
     # print function description
@@ -583,7 +583,7 @@ function _config_simple_parameter_check() {
     done
 
     if [ "$argument" == "--help" ]; then
-        return
+        return 2
     fi
 
     # check parameter
