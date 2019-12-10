@@ -136,6 +136,63 @@ function config_bash_search_restore() {
     _config_file_restore "$FILENAME_CONFIG" "backup-once"
 }
 
+# 2019 12 10
+
+function config_bash_search_local() {
+
+    # print help and check for user agreement
+    _config_simple_parameter_check "$FUNCNAME" "$1" \
+      "enables searching through the bash-history using" \
+      "page-up/page-down keys."
+    if [ $? -ne 0 ]; then return -1; fi
+
+    # do the configuration
+    FILENAME_CONFIG=~/".inputrc"
+
+    AWK_STRING='
+        # init variables
+        BEGIN {
+            found_backward=0
+            found_forward=0
+        }
+
+        # check for existing entries
+        $0 ~ /^"\\e\[5~": history-search-backward/ {
+          found_backward=1
+        }
+        $0 ~ /^"\\e\[6~": history-search-forward/ {
+          found_forward=1
+        }
+
+        { print $0 }
+
+        # add config (if necessary)
+        END {
+            if (found_backward == 0) {
+                print "\"\\e[5~\": history-search-backward"
+            }
+            if (found_forward == 0) {
+                print "\"\\e[6~\": history-search-forward"
+            }
+        }
+    '
+
+    _config_file_modify "$FILENAME_CONFIG" "$AWK_STRING" "auto"
+}
+
+function config_bash_search_local_restore() {
+
+    # print help and check for user agreement
+    _config_simple_parameter_check "$FUNCNAME" "$1" \
+      "restores the old behaviour for searching through the bash-history."
+    if [ $? -ne 0 ]; then return -1; fi
+
+    # undo the configuration
+    FILENAME_CONFIG=~/".inputrc"
+
+    _config_file_restore "$FILENAME_CONFIG" "auto"
+}
+
 
 #***************************[sources.list]************************************
 # 2019 11 20
