@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[modify config files]*****************************
-# 2019 11 21
+# 2019 12 10
 function _config_file_modify() {
 
     # print help
@@ -239,7 +239,7 @@ function _config_file_modify_full() {
     if [ $? -ne 0 ]; then return -11; fi
 }
 
-# 2019 11 21
+# 2019 12 10
 function _config_file_restore() {
 
     # print help
@@ -337,12 +337,22 @@ function _config_file_restore() {
         fi
     fi
 
-    # remove last file
+    # find last file
     filename_last="$(_config_file_return_last "$param_filename")";
     if [ $? -ne 0 ]; then return -6; fi
     if [ ! -e "$filename_last" ]; then
         return -6
     fi
+
+    # check last config
+    if [ "$(diff --brief "$filename_last" "$param_filename")" != "" ]; then
+        echo "File \"$param_filename\" has been changed!"
+        echo "  (it is NOT identical to \"$filename_last\")"
+
+        return -7
+    fi
+
+    # remove last config
     echo "rm \"$filename_last\""
     rm "$filename_last"
 
@@ -353,7 +363,7 @@ function _config_file_restore() {
         filename_last="$(_config_file_return_last "$param_filename")";
         if [ $? -ne 0 ]; then return -7; fi
         if [ ! -e "$filename_last" ]; then
-            return -7
+            return -8
         fi
 
         #// move file back to original position
