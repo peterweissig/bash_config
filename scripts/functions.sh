@@ -19,6 +19,8 @@ function _config_file_modify() {
         echo "         \"normal\"        ... normal operation (default)"
         echo "         \"backup-once\"   ... fails if backup already exists"
         echo "         \"create-config\" ... fails if file already exists"
+        echo "         \"auto\"          ... automatically switches between"
+        echo "                               normal and create-config"
         echo "    [#4:]additional header (default date and username)"
         echo "         if not set (\"\"), no header will be added"
         echo "This function modifies the given config file - "
@@ -44,6 +46,7 @@ function _config_file_modify() {
     if [ $# -gt 2 ]; then
         if [ "$param_flag" != "backup-once" ] && \
           [ "$param_flag" != "create-config" ] && \
+          [ "$param_flag" != "auto" ] && \
           [ "$param_flag" != "normal" ]; then
             echo "$FUNCNAME: Parameter Error."
             $FUNCNAME --help
@@ -57,7 +60,7 @@ function _config_file_modify() {
 
 }
 
-# 2019 11 21
+# 2019 12 10
 function _config_file_modify_full() {
 
     # print help
@@ -76,6 +79,8 @@ function _config_file_modify_full() {
         echo "         \"normal\"        ... normal operation (default)"
         echo "         \"backup-once\"   ... fails if backup already exists"
         echo "         \"create-config\" ... fails if file already exists"
+        echo "         \"auto\"          ... automatically switches between"
+        echo "                               normal and create-config"
         echo "    [#5:]additional header (default date and username)"
         echo "         if not set (\"\"), no header will be added"
         echo "This function modifies the given config file - "
@@ -124,6 +129,10 @@ function _config_file_modify_full() {
             flag_backup_once="1"
         elif [ "$param_flag" == "create-config" ]; then
             flag_create_config="1"
+        elif [ "$param_flag" == "auto" ]; then
+            if [ ! -e "$param_filename" ]; then
+                flag_create_config="1"
+            fi
         elif [ "$param_flag" != "normal" ]; then
             echo "$FUNCNAME: Parameter Error."
             $FUNCNAME --help
@@ -258,6 +267,8 @@ function _config_file_restore() {
         echo "                               two backups (before and after)"
         echo "         \"create-config\" ... fails if there are not exactly"
         echo "                               one backup (only after)"
+        echo "         \"auto\"          ... fails if there are not at least"
+        echo "                               one backup"
         echo "This function restores the formerly modified config file."
         echo "The related backup-files will be removed!"
 
@@ -284,12 +295,14 @@ function _config_file_restore() {
 
     flag_backup_once="0"
     flag_create_config="0"
-
+    flag_auto_config="0"
     if [ $# -gt 1 ]; then
         if [ "$param_flag" == "backup-once" ]; then
             flag_backup_once="1"
         elif [ "$param_flag" == "create-config" ]; then
             flag_create_config="1"
+        elif [ "$param_flag" == "auto" ]; then
+            flag_auto_config="1"
         elif [ "$param_flag" != "normal" ]; then
             echo "$FUNCNAME: Parameter Error."
             $FUNCNAME --help
@@ -308,14 +321,25 @@ function _config_file_restore() {
       -regex ".*/[0-9_]*${filebase_simple}[0-9_]*")"
     if [ $? -ne 0 ]; then return -3; fi
 
-    if [ "$(echo "$find_result" | wc -w)" -eq 0 ]; then
+    count_result="$(echo "$find_result" | wc -l)"
+    if [ "$find_result" == "" ] || [ "$count_result" -eq 0 ]; then
         echo "$FUNCNAME: no backup for file ($param_filename)!"
         return -4
     fi
 
-    # test for flags
+    # check for auto config
+    if [ "$flag_auto_config" -ne 0 ]; then
+        if [ "$count_result" -eq 1 ]; then
+            flag_create_config="1"
+        fi
+        if [ "$count_result" -eq 2 ]; then
+            flag_backup_once="1"
+        fi
+    fi
+
+    # test number of needed backups
     if [ "$flag_create_config" -ne 0 ]; then
-        if [ "$(echo "$find_result" | wc -l)" -ne 1 ]; then
+        if [ "$count_result" -ne 1 ]; then
             echo "$FUNCNAME: there must be exactly one backup for file"
             echo "  $param_filename"
             return -5
@@ -323,13 +347,13 @@ function _config_file_restore() {
 
     else
         if [ "$flag_backup_once" -ne 0 ]; then
-            if [ "$(echo "$find_result" | wc -l)" -ne 2 ]; then
+            if [ "$count_result" -ne 2 ]; then
                 echo "$FUNCNAME: there must be exactly two backups for file"
                 echo "  $param_filename"
                 return -5
             fi
         else
-            if [ "$(echo "$find_result" | wc -l)" -lt 2 ]; then
+            if [ "$count_result" -lt 2 ]; then
                 echo "$FUNCNAME: there must be at least two backups for file"
                 echo "  $param_filename"
                 return -5
