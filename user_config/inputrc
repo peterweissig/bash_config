@@ -1,0 +1,36 @@
+# /home/<Benutzername>/.inputc
+# ============================
+#
+# Diese Datei aktiviert die Suchfunktion in der Konsole per <Bild-hoch> bzw. <Bild-runter>-Taste.
+# Dies ist sehr hilfreich wenn ein (langer) Befehl erneut eingegeben werden soll.
+# 
+# Verwendung:
+#    Erste Zeichen des Befehls normal eingeben.
+#        z.B. "so"
+#
+#    Jetzt die <Bild-hoch>-Taste drücken.
+#        Es wird die Bash-History (alle zuletzt eingegebenen Befehle) durchsucht.
+#        Und dabei immer das letzte Ergebnis zurück gegeben.
+#        z.B. "source devel/setup.bash"
+#
+#    Da dies noch nicht der gesuchte Befehl war kann durch erneutes drücken
+#    der <Bild-hoch>-Taste weitergesucht werden.
+#        z.B. "source /opt/ros/melodic/setup.bash"
+#        z.B. "source /opt/ros/kinetic/setup.bash"
+#      
+#    Ist man zuweit zurückgegangen kann man mit der <Bild-runter>-Taste wieder zurück gehen.
+#        z.B. "source /opt/ros/melodic/setup.bash"
+#
+#    Hinweis: Für die Suche werden nur die Zeichen bis zum Cursor beachtet, alle Zeichen danach
+#             werden nicht berücksichtigt.
+#
+# "Installation"
+#    Diese Datei muss im Home-Verzeichnis (also unter /home/<benutzername>/) abgelegt werden.
+#    Danach die Datei zu ".inputrc" umbenennen.
+#
+#    Hinweis: Dateinamen, die mit einem Punkt beginnen sind unter Linux versteckte Dateien.
+#             Es ist daher ratsam die Datei erst in das Home-Verzeichnis zu kopieren und
+#             hinterher umzubennen.
+
+"\e[5~": history-search-backward
+"\e[6~": history-search-forward
