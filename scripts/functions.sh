@@ -248,7 +248,7 @@ function _config_file_modify_full() {
     if [ $? -ne 0 ]; then return -11; fi
 }
 
-# 2019 12 10
+# 2020 01 05
 function _config_file_restore() {
 
     # print help
@@ -394,6 +394,7 @@ function _config_file_restore() {
         if [ "$(stat -c '%U' "$param_filename")" == "root" ]; then
             echo "sudo mv \"$filename_last\" \"$param_filename\""
             sudo mv "$filename_last" "$param_filename"
+            sudo chown root:root "$param_filename"
         else
             echo "mv \"$filename_last\" \"$param_filename\""
             mv "$filename_last" "$param_filename"
