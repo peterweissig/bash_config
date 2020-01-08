@@ -60,12 +60,13 @@ function _config_file_modify() {
 
 }
 
-# 2019 12 10
+# 2020 01 08
 function _config_file_modify_full() {
 
     # print help
     if [ "$1" == "-h" ]; then
-        echo "$FUNCNAME <filename> [<subdir>] [<script>] [<flag>] [<header>]"
+        echo -n "$FUNCNAME <filename> [<subdir>] [<script>] [<flag>] "
+        echo "[<header>] [<copy-with-sudo>]"
 
         return
     fi
@@ -82,7 +83,10 @@ function _config_file_modify_full() {
         echo "         \"auto\"          ... automatically switches between"
         echo "                               normal and create-config"
         echo "    [#5:]additional header (default date and username)"
+        echo "         if set to \"default\", will create default header"
         echo "         if not set (\"\"), no header will be added"
+        echo "    [#6:]using sudo to read and copy file"
+        echo "         (must be \"sudo\" to be in effect)"
         echo "This function modifies the given config file - "
         echo "either by running the given awk script or by executing nano."
         echo "Before and after the operation a backup-file will be created."
@@ -91,7 +95,7 @@ function _config_file_modify_full() {
     fi
 
     # check parameter
-    if [ $# -lt 1 ] || [ $# -gt 5 ]; then
+    if [ $# -lt 1 ] || [ $# -gt 6 ]; then
         echo "$FUNCNAME: Parameter Error."
         $FUNCNAME --help
         return -1
@@ -110,6 +114,7 @@ function _config_file_modify_full() {
     param_script="$3"
     param_flag="$4"
     param_header="$5"
+    param_sudo="$6"
 
     config_path_backup="$CONFIG_PATH_BACKUP"
     if [ "$config_path_backup" != "" ] && \
@@ -122,6 +127,12 @@ function _config_file_modify_full() {
         config_path_backup="${config_path_backup}/"
     fi
 
+    if [ "$param_sudo" != "" ] && [ "$param_sudo" != "sudo" ]; then
+        echo "$FUNCNAME: copy-with-sudo must be \"\" (empty) or sudo."
+        echo "  (not \"$param_sudo\")"
+        return -1
+    fi
+
     flag_backup_once="0"
     flag_create_config="0"
     if [ $# -gt 3 ]; then
@@ -131,7 +142,10 @@ function _config_file_modify_full() {
             flag_create_config="1"
         elif [ "$param_flag" == "auto" ]; then
             if [ ! -e "$param_filename" ]; then
-                flag_create_config="1"
+                if [ "$sudo_flag" != "sudo" ] ||
+                  sudo [ ! -e "$param_filename" ]; then
+                    flag_create_config="1"
+                fi
             fi
         elif [ "$param_flag" != "normal" ]; then
             echo "$FUNCNAME: Parameter Error."
@@ -164,7 +178,7 @@ function _config_file_modify_full() {
     if [ "$flag_create_config" -eq 0 ]; then
         #// check file and create a backup before applying awk-script
         _file_backup_base "$param_filename" "$config_path_backup" \
-          "suffix" "--yes"
+          "suffix" "--yes" "$param_sudo"
         if [ $? -ne 0 ]; then return -5; fi
     else
         if [ -e "$param_filename" ]; then
@@ -178,15 +192,29 @@ function _config_file_modify_full() {
 
     if [ "$flag_create_config" -eq 0 ]; then
         if [ "$param_script" == "" ]; then
-            cp "$param_filename" "$temp_file"
+            if [ "$sudo_flag" != "sudo" ]; then
+                cp "$param_filename" "$temp_file"
+            else
+                sudo cp "$param_filename" "$temp_file"
+            fi
             nano "$temp_file"
         else
-            cat "$param_filename" | awk "$param_script" > "$temp_file"
+            if [ "$sudo_flag" != "sudo" ]; then
+                cat "$param_filename" | awk "$param_script" > "$temp_file"
+            else
+                sudo cat "$param_filename" | \
+                  awk "$param_script" > "$temp_file"
+            fi
         fi
         if [ $? -ne 0 ]; then return -7; fi
 
         #// check if file was changed
-        if [ "$(diff --brief "$temp_file" "$param_filename")" == "" ]; then
+        if [ "$sudo_flag" != "sudo" ]; then
+            temp="$(diff --brief "$temp_file" "$param_filename")"
+        else
+            temp="$(sudo diff --brief "$temp_file" "$param_filename")"
+        fi
+        if [ "$temp" == "" ]; then
             echo "File \"$param_filename\" not changed!"
             rm "$temp_file"
 
@@ -206,7 +234,7 @@ function _config_file_modify_full() {
     fi
 
     #// create header
-    if [ $# -lt 5 ]; then
+    if [ $# -lt 5 ] || [ "$param_header" == "default" ]; then
         header="$(
             echo "# $(date): $USER edited \"$(realpath "$param_filename")\""
             echo "#"
@@ -223,7 +251,8 @@ function _config_file_modify_full() {
     fi
 
     #// copy file back to original position and remove temp file
-    if [ "$(stat -c '%U' "$temp_dir_or_file")" == "root" ]; then
+    if [ "$sudo_flag" == "sudo" ] || \
+      [ "$(stat -c '%U' "$temp_dir_or_file")" == "root" ]; then
         (
             if [ "$header" != "" ]; then
                 echo "$header"
@@ -244,7 +273,7 @@ function _config_file_modify_full() {
 
     #// create a backup after the operation
     _file_backup_base "$param_filename" "$config_path_backup" \
-      "suffix" "--yes"
+      "suffix" "--yes" "$param_sudo"
     if [ $? -ne 0 ]; then return -11; fi
 }
 
