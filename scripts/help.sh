@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2019 12 10
+# 2020 01 26
 
 function config_help_all() {
 
@@ -57,12 +57,13 @@ function config_help_all() {
     echo ""
     echo "user config"
     echo -n "  "; echo "config_bash_search_local(_restore)"
+    echo -n "  "; echo "config_users_hide_login(_restore)"
     echo -n "  "; config_clear_home -h
     echo ""
 }
 
 #***************************[help]********************************************
-# 2019 12 10
+# 2020 01 26
 
 function config_help() {
 
@@ -90,6 +91,7 @@ function config_help() {
     echo ""
     echo "user config"
     echo -n "  "; echo "config_bash_search_local(_restore)"
+    echo -n "  "; echo "config_users_hide_login(_restore)"
     echo -n "  "; config_clear_home -h
     echo ""
 }
