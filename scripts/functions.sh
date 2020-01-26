@@ -220,7 +220,7 @@ function _config_file_modify_full() {
 
             if [ "$flag_create_config" -eq 0 ]; then
                 filename_last="$(_config_file_return_last \
-                  "$param_filename")";
+                  "$param_filename" "$config_path_backup")";
                 if [ -e "$filename_last" ]; then
                     echo "rm \"$filename_last\""
                     rm "$filename_last"
@@ -277,7 +277,7 @@ function _config_file_modify_full() {
     if [ $? -ne 0 ]; then return -11; fi
 }
 
-# 2020 01 05
+# 2020 01 26
 function _config_file_restore() {
 
     # print help
@@ -311,6 +311,61 @@ function _config_file_restore() {
         return -1
     fi
 
+    # init variables
+    param_filename="$1"
+    param_flag="$2"
+
+    if [ $# -gt 2 ]; then
+        if [ "$param_flag" != "backup-once" ] && \
+          [ "$param_flag" != "create-config" ] && \
+          [ "$param_flag" != "auto" ] && \
+          [ "$param_flag" != "normal" ]; then
+            echo "$FUNCNAME: Parameter Error."
+            $FUNCNAME --help
+            return -1
+        fi
+    fi
+
+    # call full version of restore script
+    shift
+    _config_file_restore_full "$param_filename" "" "$@"
+
+}
+
+function _config_file_restore_full() {
+
+    # print help
+    if [ "$1" == "-h" ]; then
+        echo "$FUNCNAME <filename> [<flag>]"
+
+        return
+    fi
+    if [ "$1" == "--help" ]; then
+        echo "$FUNCNAME needs 1-3 parameters"
+        echo "     #1: full path of original file"
+        echo "    [#2:]additional subdirectory for storing backup"
+        echo "    [#3:]flag"
+        echo "         \"normal\"        ... fails if there are not at least"
+        echo "                               two backups (default)"
+        echo "         \"backup-once\"   ... fails if there are not exactly"
+        echo "                               two backups (before and after)"
+        echo "         \"create-config\" ... fails if there are not exactly"
+        echo "                               one backup (only after)"
+        echo "         \"auto\"          ... fails if there are not at least"
+        echo "                               one backup"
+        echo "This function restores the formerly modified config file."
+        echo "The related backup-files will be removed!"
+
+        return
+    fi
+
+    # check parameter
+    if [ $# -lt 1 ] || [ $# -gt 3 ]; then
+        echo "$FUNCNAME: Parameter Error."
+        $FUNCNAME --help
+        return -1
+    fi
+
     # check for other repos
     if [ "$SOURCED_BASH_FILE" == "" ]; then
         echo -n "$FUNCNAME: Can't find file-functions. Did you call "
@@ -320,7 +375,8 @@ function _config_file_restore() {
 
     # init variables
     param_filename="$1"
-    param_flag="$2"
+    param_subdir="$2"
+    param_flag="$3"
 
     flag_backup_once="0"
     flag_create_config="0"
@@ -339,6 +395,17 @@ function _config_file_restore() {
         fi
     fi
 
+    config_path_backup="$CONFIG_PATH_BACKUP"
+    if [ "$config_path_backup" != "" ] && \
+      [ "${config_path_backup: -1}" != "/" ]; then
+        config_path_backup="${config_path_backup}/"
+    fi
+    config_path_backup="${config_path_backup}${param_subdir}"
+    if [ "$config_path_backup" != "" ] && \
+      [ "${config_path_backup: -1}" != "/" ]; then
+        config_path_backup="${config_path_backup}/"
+    fi
+
     # simplify config-file name
     filepath="$(dirname  "$param_filename")"
     filebase="$(basename "$param_filename")"
@@ -346,7 +413,7 @@ function _config_file_restore() {
     if [ $? -ne 0 ]; then return -2; fi
 
     # check for already existing backups
-    find_result="$(find "$CONFIG_PATH_BACKUP" -regextype sed \
+    find_result="$(find "$config_path_backup" -regextype sed \
       -regex ".*/[0-9_]*${filebase_simple}[0-9_]*")"
     if [ $? -ne 0 ]; then return -3; fi
 
@@ -391,7 +458,8 @@ function _config_file_restore() {
     fi
 
     # find last file
-    filename_last="$(_config_file_return_last "$param_filename")";
+    filename_last="$(_config_file_return_last \
+      "$param_filename" "$config_path_backup")";
     if [ $? -ne 0 ]; then return -6; fi
     if [ ! -e "$filename_last" ]; then
         return -6
@@ -413,7 +481,8 @@ function _config_file_restore() {
     if [ "$flag_create_config" -eq 0 ]; then
 
         # get second last file
-        filename_last="$(_config_file_return_last "$param_filename")";
+        filename_last="$(_config_file_return_last \
+          "$param_filename" "$config_path_backup")";
         if [ $? -ne 0 ]; then return -7; fi
         if [ ! -e "$filename_last" ]; then
             return -8
@@ -440,18 +509,19 @@ function _config_file_restore() {
     fi
 }
 
-# 2019 11 20
+# 2020 01 26
 function _config_file_return_last() {
 
     # print help
     if [ "$1" == "-h" ]; then
-        echo "$FUNCNAME <filename>"
+        echo "$FUNCNAME <filename> [<backup-path>]"
 
         return
     fi
     if [ "$1" == "--help" ]; then
-        echo "$FUNCNAME needs 1 parameter"
+        echo "$FUNCNAME needs 1-2 parameters"
         echo "     #1: full path of original file"
+        echo "    [#2:]backup-path (defaults to CONFIG_PATH_BACKUP)"
         echo "This function returns the path/name of the last stored"
         echo "version of the given file."
 
@@ -459,7 +529,7 @@ function _config_file_return_last() {
     fi
 
     # check parameter
-    if [ $# -ne 1 ]; then
+    if [ $# -lt 1 ] || [ $# -gt 2 ]; then
         echo "$FUNCNAME: Parameter Error."
         $FUNCNAME --help
         return -1
@@ -474,6 +544,11 @@ function _config_file_return_last() {
 
     # init variables
     param_filename="$1"
+    param_backup_path="$2"
+
+    if [ "$param_backup_path" == "" ]; then
+        param_backup_path="$CONFIG_PATH_BACKUP"
+    fi
 
     # simplify config-file name
     filepath="$(dirname  "$param_filename")"
@@ -482,7 +557,7 @@ function _config_file_return_last() {
     if [ $? -ne 0 ]; then return -2; fi
 
     # check for existing backup
-    find_result="$(find "$CONFIG_PATH_BACKUP" -regextype sed \
+    find_result="$(find "$param_backup_path" -regextype sed \
       -regex ".*/[0-9_]*${filebase_simple}[0-9_]*")"
     if [ $? -ne 0 ]; then return -3; fi
 
