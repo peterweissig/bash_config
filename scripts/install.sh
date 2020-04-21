@@ -45,12 +45,12 @@ function config_install_nextcloud() {
     # adding repository
     echo "$FUNCNAME: adding repository"
     echo "  ($url_repository)"
-    sudo add-apt-repository "$url_repository"
+    sudo add-apt-repository "$url_repository" --yes
     if [ $? -ne 0 ]; then return -3; fi
 
     # install client
     sudo apt-get update
-    sudo apt install nextcloud-client
+    sudo apt install nextcloud-client --yes
 }
 
 
@@ -117,7 +117,7 @@ function config_install_vscode() {
         sudo install -o root -g root -m 644 "$key_name" "$key_path"
         if [ $? -ne 0 ]; then return -5; fi
         # remove key file
-        rm "$url_keys"
+        rm "$key_name"
     fi
 
     # setup source list
@@ -132,7 +132,7 @@ function config_install_vscode() {
 
     # install vscode
     sudo apt-get update
-    sudo apt install code
+    sudo apt install code --yes
 }
 
 
