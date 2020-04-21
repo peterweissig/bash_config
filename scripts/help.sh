@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2020 01 26
+# 2020 04 21
 
 function config_help_all() {
 
@@ -39,6 +39,8 @@ function config_help_all() {
     echo ""
     echo "install"
     echo -n "  "; echo "config_update_system  #no help"
+    echo -n "  "; config_install_nextcloud -h
+    echo -n "  "; config_install_vscode -h
     echo -n "  "; _config_install_list -h
     echo ""
     echo "general config functions"
@@ -54,6 +56,7 @@ function config_help_all() {
     echo -n "  "; config_sources_aptcacher_set -h
     echo -n "  "; config_sources_aptcacher_check -h
     echo -n "  "; config_sources_aptcacher_unset -h
+    echo -n "  "; _config_check_sources -h
     echo ""
     echo "user config"
     echo -n "  "; echo "config_bash_search_local(_restore)"
@@ -63,7 +66,7 @@ function config_help_all() {
 }
 
 #***************************[help]********************************************
-# 2020 01 26
+# 2020 04 21
 
 function config_help() {
 
@@ -79,6 +82,8 @@ function config_help() {
     echo ""
     echo "install"
     echo -n "  "; echo "config_update_system  #no help"
+    echo -n "  "; config_install_nextcloud -h
+    echo -n "  "; config_install_vscode -h
     echo ""
     echo "general config functions"
     echo -n "  "; nano_config -h

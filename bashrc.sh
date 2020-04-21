@@ -46,8 +46,9 @@ export EDITOR='nano -w'
 
 
 #***************************[source]******************************************
-# 2019 09 08
+# 2020 04 21
 
 . ${CONFIG_PATH}scripts/functions.sh
 . ${CONFIG_PATH}scripts/config.sh
+. ${CONFIG_PATH}scripts/install.sh
 . ${CONFIG_PATH}scripts/help.sh
