@@ -571,7 +571,7 @@ function _config_file_return_last() {
 
 
 #***************************[installation]************************************
-# 2019 09 10
+# 2020 04 21
 
 function _config_install_list() {
 
@@ -604,7 +604,6 @@ function _config_install_list() {
 
     # init variables
     verbose="1"
-    auto_answer=""
     answer=""
 
     if [ $# -gt 1 ]; then
@@ -619,7 +618,7 @@ function _config_install_list() {
 
     if [ $# -gt 2 ]; then
         if [ "$3" == "-y" ] || [ "$3" == "--yes" ]; then
-            auto_answer="--assume-yes"
+            answer="a"
         elif [ "$3" != "" ]; then
             echo "$FUNCNAME: Parameter Error."
             $FUNCNAME --help
@@ -661,7 +660,7 @@ function _config_install_list() {
 
             # install
             if [ "$answer" == "y" ] || [ "$answer" == "a" ]; then
-                sudo apt install "$package" $auto_answer
+                sudo apt install "$package" --assume-yes
             fi
         fi
     done
