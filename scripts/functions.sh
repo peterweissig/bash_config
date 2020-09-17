@@ -796,7 +796,7 @@ function _config_simple_parameter_check() {
 
 
 #***************************[config_info]*************************************
-# 2019 09 29
+# 2020 09 17
 
 function config_info() {
 
@@ -822,7 +822,9 @@ function config_info() {
     fi
 
     echo ""
-    ifconfig | grep -E "(Link |inet )"
+    ip address show | grep --color=auto --extended-regexp \
+      "(^[^ ]+ [^ ]+|(inet|ether) [^ ]+)"
+    #ifconfig | grep -E "(Link |inet )"
 
     echo ""
     lsb_release -a | grep "Description"
@@ -831,12 +833,13 @@ function config_info() {
 
     echo ""
     cat /proc/cpuinfo | grep "model name" | head -n 1
-    cat /proc/cpuinfo | grep "cores" | head -n 1
+    cat /proc/cpuinfo | grep "cores"      | head -n 1
     cat /proc/cpuinfo | grep "MHz"
 
     echo ""
     cat /proc/meminfo | grep "MemTotal"
 
     echo ""
-    sudo parted --script --list | grep /dev/sd
+    sudo parted --script --list | grep --color=auto --extended-regexp \
+      "/dev/sd[^ :]+"
 }
