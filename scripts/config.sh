@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+
 #***************************[apt]*********************************************
 # 2019 09 08
 
@@ -27,6 +29,7 @@ function config_update_system() {
     echo ""
     echo "done :-)"
 }
+
 
 
 #***************************[nano]********************************************
@@ -89,6 +92,7 @@ function nano_config_restore() {
     # call the general modification function
     _config_file_restore "$1"
 }
+
 
 
 #***************************[inputrc]*****************************************
@@ -194,6 +198,7 @@ function config_bash_search_local_restore() {
 }
 
 
+
 #***************************[sources.list]************************************
 # 2019 11 20
 
@@ -246,9 +251,10 @@ function config_source_list_add_multiverse_restore() {
 }
 
 
-#***************************[aptcacher]***************************************
-# 2019 11 20
 
+#***************************[aptcacher]***************************************
+
+# 2020 09 27
 function config_source_list_aptcacher_set() {
 
     # print help
@@ -295,10 +301,15 @@ function config_source_list_aptcacher_set() {
     "
 
     # find all entries within config path
-    readarray -t filelist <<< "$(ls "$PATH_CONFIG" 2>> /dev/null)"
+    readarray -t filelist <<< "$(ls "$PATH_CONFIG" 2>> /dev/null | \
+      grep -v -e ".save\$" )"
         # check result
         if [ $? -ne 0 ]; then return -2; fi
-
+    # prepand path to all files
+    for i in ${!filelist[@]}; do
+        filelist[$i]="${PATH_CONFIG}${filelist[$i]}"
+    done
+    # add basic file
     filelist+=("$FILENAME_CONFIG")
 
     # iterate over all files
@@ -306,14 +317,17 @@ function config_source_list_aptcacher_set() {
         if [ "${filelist[$i]}" == "" ] || [ ! -e "${filelist[$i]}" ]; then
             continue;
         fi
+        echo "modifying file ${filelist[$i]}"
 
         # do the configuration
         _config_file_modify_full "${filelist[$i]}" "apt_cacher" \
           "$AWK_STRING" "normal" ""
         if [ $? -ne 0 ]; then return -3; fi
+        echo ""
     done
 }
 
+# 2020 09 27
 function config_source_list_aptcacher_check() {
 
     # print help
@@ -342,10 +356,15 @@ function config_source_list_aptcacher_check() {
     PATH_CONFIG="/etc/apt/sources.list.d/"
 
     # find all entries within config path
-    readarray -t filelist <<< "$(ls "$PATH_CONFIG" 2>> /dev/null)"
+    readarray -t filelist <<< "$(ls "$PATH_CONFIG" 2>> /dev/null | \
+      grep -v -e ".save\$" )"
         # check result
         if [ $? -ne 0 ]; then return -2; fi
-
+    # prepand path to all files
+    for i in ${!filelist[@]}; do
+        filelist[$i]="${PATH_CONFIG}${filelist[$i]}"
+    done
+    # add basic file
     filelist+=("$FILENAME_CONFIG")
 
     # iterate over all files
@@ -353,11 +372,19 @@ function config_source_list_aptcacher_check() {
         if [ "${filelist[$i]}" == "" ] || [ ! -e "${filelist[$i]}" ]; then
             continue;
         fi
+        echo "checking file ${filelist[$i]}"
 
-        # check already set
+        # check if already set
         temp="$(cat "${filelist[$i]}" | grep --extended-regexp "^deb" | \
         grep --extended-regexp -v ":[0-9]+")"
-        if [ "$(echo "$temp" | wc -w)" -gt 0 ]; then
+
+        # check for https
+        if [ "$(echo "$temp" | grep "https" | wc -w)" -gt 0 ]; then
+            echo "  ... can't handle https deb"
+        fi
+
+        if [ "$(echo "$temp" | grep -v "https" | wc -w)" -gt 0 ]; then
+            echo ""
             echo "$FUNCNAME: sources in \"${filelist[$i]}\" can be updated"
             echo "call \$ config_source_list_aptcacher_set"
             return
@@ -367,6 +394,7 @@ function config_source_list_aptcacher_check() {
     echo "nothing to do :-)"
 }
 
+# 2020 09 27
 function config_source_list_aptcacher_unset() {
 
     # print help and check for user agreement
@@ -386,10 +414,15 @@ function config_source_list_aptcacher_unset() {
     '
 
     # find all entries within config path
-    readarray -t filelist <<< "$(ls "$PATH_CONFIG" 2>> /dev/null)"
+    readarray -t filelist <<< "$(ls "$PATH_CONFIG" 2>> /dev/null | \
+      grep -v -e ".save\$" )"
         # check result
         if [ $? -ne 0 ]; then return -2; fi
-
+    # prepand path to all files
+    for i in ${!filelist[@]}; do
+        filelist[$i]="${PATH_CONFIG}${filelist[$i]}"
+    done
+    # add basic file
     filelist+=("$FILENAME_CONFIG")
 
     # iterate over all files
@@ -397,13 +430,16 @@ function config_source_list_aptcacher_unset() {
         if [ "${filelist[$i]}" == "" ] || [ ! -e "${filelist[$i]}" ]; then
             continue;
         fi
+        echo "reverting file ${filelist[$i]}"
 
         # do the configuration
         _config_file_modify_full "${filelist[$i]}" "apt_cacher" \
           "$AWK_STRING" "normal" ""
         if [ $? -ne 0 ]; then return -3; fi
+        echo ""
     done
 }
+
 
 
 #***************************[clear home]**************************************
@@ -468,6 +504,8 @@ function config_clear_home() {
         fi
     done
 }
+
+
 
 #***************************[user login]**************************************
 # 2020 01 26
