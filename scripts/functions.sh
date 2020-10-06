@@ -1,7 +1,41 @@
 #!/bin/bash
 
+#***************************[backup config files]*****************************
+# 2020 10 06
+function config_file_backup() {
+    # print help
+    if [ "$1" == "-h" ]; then
+        echo "$FUNCNAME <filename>"
+
+        return
+    fi
+    if [ "$1" == "--help" ]; then
+        echo "$FUNCNAME needs 1 parameter"
+        echo "     #1: full path of original file"
+        echo "This function stores an backup of the given config file."
+
+        return
+    fi
+
+    # check parameter
+    if [ $# -ne 1 ]; then
+        echo "$FUNCNAME: Parameter Error."
+        $FUNCNAME --help
+        return -1
+    fi
+
+    # init variables
+    param_filename="$1"
+
+    # call the general modification function
+    _file_backup_base "$param_filename" "$CONFIG_PATH_BACKUP" \
+      "suffix" "--yes" "sudo"
+}
+
+
+
 #***************************[modify config files]*****************************
-# 2019 12 10
+# 2020 10 06
 function _config_file_modify() {
 
     # print help
@@ -336,7 +370,7 @@ function _config_file_restore_full() {
 
     # print help
     if [ "$1" == "-h" ]; then
-        echo "$FUNCNAME <filename> [<flag>]"
+        echo "$FUNCNAME <filename> [<subdir>] [<flag>]"
 
         return
     fi
@@ -796,13 +830,13 @@ function _config_simple_parameter_check() {
 
 
 #***************************[config_info]*************************************
-# 2020 09 17
+# 2020 10 06
 
 function config_info() {
 
     # print help
     if [ "$1" == "-h" ]; then
-        echo -n "$FUNCNAME"
+        echo "$FUNCNAME"
 
         return
     fi
