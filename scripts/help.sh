@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2020 04 21
+# 2020 10 06
 
 function config_help_all() {
 
@@ -46,6 +46,7 @@ function config_help_all() {
     echo "general config functions"
     echo -n "  "; nano_config -h
     echo -n "  "; nano_config_restore -h
+    echo -n "  "; config_file_backup -h
     echo -n "  "; _config_file_modify -h
     echo -n "  "; _config_file_restore -h
     echo -n "  "; _config_file_return_last -h
@@ -66,7 +67,7 @@ function config_help_all() {
 }
 
 #***************************[help]********************************************
-# 2020 04 21
+# 2020 10 06
 
 function config_help() {
 
@@ -88,6 +89,7 @@ function config_help() {
     echo "general config functions"
     echo -n "  "; nano_config -h
     echo -n "  "; nano_config_restore -h
+    echo -n "  "; config_file_backup -h
     echo ""
     echo "setup system"
     echo -n "  "; echo "config_bash_search(_restore)"
