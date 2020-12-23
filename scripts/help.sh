@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2020 10 06
+# 2020 12 23
 
 function config_help_all() {
 
@@ -41,6 +41,7 @@ function config_help_all() {
     echo -n "  "; echo "config_update_system  #no help"
     echo -n "  "; config_install_nextcloud -h
     echo -n "  "; config_install_vscode -h
+    echo -n "  "; config_install_ros -h
     echo -n "  "; _config_install_list -h
     echo ""
     echo "general config functions"
@@ -67,7 +68,7 @@ function config_help_all() {
 }
 
 #***************************[help]********************************************
-# 2020 10 06
+# 2020 12 23
 
 function config_help() {
 
@@ -85,6 +86,7 @@ function config_help() {
     echo -n "  "; echo "config_update_system  #no help"
     echo -n "  "; config_install_nextcloud -h
     echo -n "  "; config_install_vscode -h
+    echo -n "  "; config_install_ros -h
     echo ""
     echo "general config functions"
     echo -n "  "; nano_config -h

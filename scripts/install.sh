@@ -136,3 +136,95 @@ function config_install_vscode() {
 }
 
 
+#***************************[ros]*********************************************
+# 2020 12 23
+
+function config_install_ros() {
+
+    # print help
+    if [ "$1" == "-h" ]; then
+        echo "$FUNCNAME"
+
+        return
+    fi
+    if [ "$1" == "--help" ]; then
+        echo "$FUNCNAME needs 0 parameters"
+        echo "This function installs appropriate ROS 1 version."
+        echo " (kinetic, melodic or noetic)"
+
+        return
+    fi
+
+    # check parameter
+    if [ $# -gt 0 ]; then
+        echo "$FUNCNAME: Parameter Error."
+        $FUNCNAME --help
+        return -1
+    fi
+
+
+    # check source files
+    str="$(_config_check_sources_ros)"
+
+    if [ "$?" -ne 0 ]; then
+        echo "$FUNCNAME: error checking if ros sources are already installed"
+        return -2
+    fi
+    if [ -e "$str"  ]; then
+        echo "$FUNCNAME: ros sources are already installed"
+        return
+    fi
+
+    # check ubuntu version
+    VER=$(lsb_release -r | cut -f2 | cut -d. -f1)
+    if [ $VER -eq 20 ]; then
+        ROS_DISTRO="noetic"
+    elif [ $VER -eq 18 ]; then
+        ROS_DISTRO="melodic"
+    elif [ $VER -eq 16 ]; then
+        ROS_DISTRO="kinetic"
+    else
+        echo "$FUNCNAME: no currently supported ROS1 version available"
+        return -3
+    fi
+
+    # install based on website
+    #   https://www.ros.org/install/
+    url_key="hkp://keyserver.ubuntu.com:80"
+    key_id="C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654"
+    source_list="/etc/apt/sources.list.d/ros.list"
+
+    if [ -e "$source_list" ]; then
+        echo "$FUNCNAME: error source file already exist"
+        echo "  ($source_list)"
+        return -4
+    fi
+
+    # check keys
+    if [ "$( apt-key list "${key_id}")" == "" ]; then
+        echo "$FUNCNAME: adding keys from ROS"
+        echo "  ($url_key)"
+
+        sudo apt-key adv --keyserver "$url_key" \
+          --recv-key "$key_id"
+    fi
+
+    # setup source list
+    echo "$FUNCNAME: creating source list"
+    echo "  ($source_list)"
+
+    (
+        echo -n "deb http://packages.ros.org/ros/ubuntu "
+        echo    "$(lsb_release -sc) main"
+    ) | sudo tee "$source_list"
+    if [ $? -ne 0 ]; then return -6; fi
+
+    # install ros
+    sudo apt-get update
+    sudo apt install ros-${ROS_DISTRO}-desktop --yes
+
+    # hint for more
+    echo "You may also install the full ros version:"
+    echo "  $ sudo apt install ros-${ROS_DISTRO}-desktop-full"
+}
+
