@@ -54,6 +54,7 @@ function config_help_all() {
     echo ""
     echo "setup system"
     echo -n "  "; echo "config_bash_search(_restore)"
+    echo -n "  "; echo "config_users_show_logins(_restore)"
     echo -n "  "; echo "config_sources_add_multiverse(_restore)"
     echo -n "  "; config_sources_aptcacher_set -h
     echo -n "  "; config_sources_aptcacher_check -h
@@ -96,6 +97,7 @@ function config_help() {
     echo ""
     echo "setup system"
     echo -n "  "; echo "config_bash_search(_restore)"
+    echo -n "  "; echo "config_users_show_logins(_restore)"
     echo -n "  "; echo "config_sources_add_multiverse(_restore)"
     echo -n "  "; echo "config_sources_aptcacher_(un)set"
     echo ""

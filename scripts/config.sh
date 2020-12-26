@@ -687,3 +687,42 @@ function config_users_hide_login_restore() {
     _config_file_restore_full "$FILENAME_CONFIG" "accounts_service" \
       "create-config"
 }
+
+
+# 2020 12 26
+function config_users_show_logins() {
+
+    # print help and check for user agreement
+    _config_simple_parameter_check "$FUNCNAME" "$1" \
+      "shows all users on login screen."
+    if [ $? -ne 0 ]; then return -1; fi
+
+
+    FILENAME_CONFIG="/etc/lightdm/lightdm.conf"
+
+
+    AWK_STRING='
+        # remove greeter-hide-users
+        $0 ~ /^greeter-hide-users=true/ {
+          $0 = "# [REMOVED]: " $0
+        }
+
+        { print $0 }
+    '
+
+    # do the configuration
+    _config_file_modify "$FILENAME_CONFIG" "$AWK_STRING" "auto"
+}
+
+function config_users_show_logins_restore() {
+
+    # print help and check for user agreement
+    _config_simple_parameter_check "$FUNCNAME" "$1" \
+      "restores the old behaviour of the login screen."
+    if [ $? -ne 0 ]; then return -1; fi
+
+    # undo the configuration
+    FILENAME_CONFIG="/etc/ligthdm/ligthdm.conf"
+
+    _config_file_restore "$FILENAME_CONFIG" "auto"
+}
