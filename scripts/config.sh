@@ -199,6 +199,84 @@ function config_bash_search_local_restore() {
 
 
 
+#***************************[history size]************************************
+# 2020 12 26
+
+function config_bash_histsize() {
+
+    # print help and check for user agreement
+    _config_simple_parameter_check "$FUNCNAME" "$1" \
+      "increase length of bash-history."
+    if [ $? -ne 0 ]; then return -1; fi
+
+    # do the configuration
+    FILENAME_CONFIG=~/".bashrc"
+
+    # constants
+    HISTSIZE_NEW=5000
+    HISTFILESIZE_NEW=20000
+
+    # setuo awk strings
+    AWK_STRING1="
+        # set HISTSIZE from $HISTSIZE to $HISTSIZE_NEW
+        \$0 ~ /^HISTSIZE=/ {
+          print \"# [EDIT]: \",\$0
+          \$0 = \"HISTSIZE=$HISTSIZE_NEW\"
+        }
+    "
+    AWK_STRING2="
+        # set HISTFILESIZE from $HISTFILESIZE to $HISTFILESIZE_NEW
+        \$0 ~ /^HISTFILESIZE=/ {
+          print \"# [EDIT]: \",\$0
+          \$0 = \"HISTFILESIZE=$HISTFILESIZE_NEW\"
+        }
+    "
+    AWK_STRING3="
+        { print \$0 }
+    "
+
+
+    # check hist size
+    if [ "$HISTSIZE" != "" ] && [ "$HISTSIZE" -ge "$HISTSIZE_NEW" ]; then
+        echo "\$HISTSIZE=$HISTSIZE ... ok"
+        AWK_STRING1=""
+    else
+        echo "\$HISTSIZE=$HISTSIZE_NEW # instead of $HISTSIZE"
+    fi
+
+    # check hist-file-size
+    if [ "$HISTFILESIZE" != "" ] && \
+      [ "$HISTFILESIZE" -ge "$HISTFILESIZE_NEW" ]; then
+        echo "\$HISTFILESIZE=$HISTFILESIZE ... ok"
+        AWK_STRING2=""
+    else
+        echo "\$HISTFILESIZE=$HISTFILESIZE_NEW # instead of $HISTFILESIZE"
+    fi
+
+
+    AWK_STRING="${AWK_STRING1}${AWK_STRING2}"
+
+    if [ "$AWK_STRING1" != "" ] || [ "$AWK_STRING2" != "" ]; then
+        AWK_STRING="${AWK_STRING1}${AWK_STRING2}${AWK_STRING3}"
+        _config_file_modify "$FILENAME_CONFIG" "$AWK_STRING" "auto"
+    fi
+}
+
+function config_bash_histsize_restore() {
+
+    # print help and check for user agreement
+    _config_simple_parameter_check "$FUNCNAME" "$1" \
+      "restores the old size of bash-history."
+    if [ $? -ne 0 ]; then return -1; fi
+
+    # undo the configuration
+    FILENAME_CONFIG=~/".bashrc"
+
+    _config_file_restore "$FILENAME_CONFIG" "auto"
+}
+
+
+
 #***************************[sources.list]************************************
 # 2019 11 20
 

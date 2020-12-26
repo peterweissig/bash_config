@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2020 12 23
+# 2020 12 26
 
 function config_help_all() {
 
@@ -61,6 +61,7 @@ function config_help_all() {
     echo -n "  "; _config_check_sources -h
     echo ""
     echo "user config"
+    echo -n "  "; echo "config_bash_histsize(_restore)"
     echo -n "  "; echo "config_bash_search_local(_restore)"
     echo -n "  "; echo "config_users_hide_login(_restore)"
     echo -n "  "; config_clear_home -h
@@ -68,7 +69,7 @@ function config_help_all() {
 }
 
 #***************************[help]********************************************
-# 2020 12 23
+# 2020 12 26
 
 function config_help() {
 
@@ -99,6 +100,7 @@ function config_help() {
     echo -n "  "; echo "config_sources_aptcacher_(un)set"
     echo ""
     echo "user config"
+    echo -n "  "; echo "config_bash_histsize(_restore)"
     echo -n "  "; echo "config_bash_search_local(_restore)"
     echo -n "  "; echo "config_users_hide_login(_restore)"
     echo -n "  "; config_clear_home -h
