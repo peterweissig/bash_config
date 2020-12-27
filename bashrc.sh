@@ -31,10 +31,10 @@ fi
 
 
 #***************************[paths and files]*********************************
-# 2020 10 11
+# 2020 12 27
 
 # this is only a local variable - no export
-CONFIG_PATH="$(cd "$(dirname "${BASH_SOURCE}")" && pwd )/"
+CONFIG_PATH="$(realpath "$(dirname "${BASH_SOURCE}")" )/"
 
 
 if [ "$CONFIG_PATH_BACKUP" == "" ]; then
