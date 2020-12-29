@@ -230,6 +230,7 @@ function _config_file_modify_full() {
                 cp "$param_filename" "$temp_file"
             else
                 sudo cp "$param_filename" "$temp_file"
+                sudo chown "$USER" "$temp_file"
             fi
             nano "$temp_file"
         else
@@ -269,8 +270,13 @@ function _config_file_modify_full() {
 
     #// create header
     if [ $# -lt 5 ] || [ "$param_header" == "default" ]; then
+        if [ "$param_sudo" != "sudo" ]; then
+            filename_full="$(realpath "$param_filename")"
+        else
+            filename_full="$(sudo realpath "$param_filename")"
+        fi
         header="$(
-            echo "# $(date): $USER edited \"$(realpath "$param_filename")\""
+            echo "# $(date): $USER edited \"${filename_full}\""
             echo "#"
         )"
     else
