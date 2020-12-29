@@ -94,7 +94,7 @@ function _config_file_modify() {
 
 }
 
-# 2020 01 08
+# 2020 12 29
 function _config_file_modify_full() {
 
     # print help
@@ -176,7 +176,7 @@ function _config_file_modify_full() {
             flag_create_config="1"
         elif [ "$param_flag" == "auto" ]; then
             if [ ! -e "$param_filename" ]; then
-                if [ "$sudo_flag" != "sudo" ] ||
+                if [ "$param_sudo" != "sudo" ] ||
                   sudo [ ! -e "$param_filename" ]; then
                     flag_create_config="1"
                 fi
@@ -226,14 +226,14 @@ function _config_file_modify_full() {
 
     if [ "$flag_create_config" -eq 0 ]; then
         if [ "$param_script" == "" ]; then
-            if [ "$sudo_flag" != "sudo" ]; then
+            if [ "$param_sudo" != "sudo" ]; then
                 cp "$param_filename" "$temp_file"
             else
                 sudo cp "$param_filename" "$temp_file"
             fi
             nano "$temp_file"
         else
-            if [ "$sudo_flag" != "sudo" ]; then
+            if [ "$param_sudo" != "sudo" ]; then
                 cat "$param_filename" | awk "$param_script" > "$temp_file"
             else
                 sudo cat "$param_filename" | \
@@ -243,7 +243,7 @@ function _config_file_modify_full() {
         if [ $? -ne 0 ]; then return -7; fi
 
         #// check if file was changed
-        if [ "$sudo_flag" != "sudo" ]; then
+        if [ "$param_sudo" != "sudo" ]; then
             temp="$(diff --brief "$temp_file" "$param_filename")"
         else
             temp="$(sudo diff --brief "$temp_file" "$param_filename")"
@@ -285,7 +285,7 @@ function _config_file_modify_full() {
     fi
 
     #// copy file back to original position and remove temp file
-    if [ "$sudo_flag" == "sudo" ] || \
+    if [ "$param_sudo" == "sudo" ] || \
       [ "$(stat -c '%U' "$temp_dir_or_file")" == "root" ]; then
         (
             if [ "$header" != "" ]; then
