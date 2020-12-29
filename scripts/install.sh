@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[nextcloud]***************************************
-# 2020 04 21
+# 2020 12 29
 
 function config_install_nextcloud() {
 
@@ -49,13 +49,13 @@ function config_install_nextcloud() {
     if [ $? -ne 0 ]; then return -3; fi
 
     # install client
-    sudo apt-get update
+    sudo apt update
     sudo apt install nextcloud-client --yes
 }
 
 
 #***************************[vs code]*****************************************
-# 2020 04 21
+# 2020 12 29
 
 function config_install_vscode() {
 
@@ -131,13 +131,13 @@ function config_install_vscode() {
     if [ $? -ne 0 ]; then return -6; fi
 
     # install vscode
-    sudo apt-get update
+    sudo apt update
     sudo apt install code --yes
 }
 
 
 #***************************[ros]*********************************************
-# 2020 12 23
+# 2020 12 29
 
 function config_install_ros() {
 
@@ -220,7 +220,7 @@ function config_install_ros() {
     if [ $? -ne 0 ]; then return -6; fi
 
     # install ros
-    sudo apt-get update
+    sudo apt update
     sudo apt install ros-${ROS_DISTRO}-desktop --yes
 
     # hint for more
