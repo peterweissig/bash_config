@@ -7,23 +7,23 @@
 
 function config_update_system() {
 
-    echo "1. sudo apt-get update"
-    sudo apt-get update
+    echo "1. sudo apt update"
+    sudo apt update
     if [ $? -ne 0 ]; then return -1; fi
 
     echo ""
-    echo "2. sudo apt-get upgrade --assume-yes"
-    sudo apt-get upgrade --assume-yes
+    echo "2. sudo apt upgrade --assume-yes"
+    sudo apt upgrade --assume-yes
     if [ $? -ne 0 ]; then return -2; fi
 
     echo ""
-    echo "3. sudo apt-get dist-upgrade --assume-yes"
-    sudo apt-get dist-upgrade --assume-yes
+    echo "3. sudo apt dist-upgrade --assume-yes"
+    sudo apt dist-upgrade --assume-yes
     if [ $? -ne 0 ]; then return -3; fi
 
     echo ""
-    echo "4. sudo apt-get autoremove --assume-yes"
-    sudo apt-get autoremove --assume-yes
+    echo "4. sudo apt autoremove --assume-yes"
+    sudo apt autoremove --assume-yes
     if [ $? -ne 0 ]; then return -4; fi
 
     echo ""
