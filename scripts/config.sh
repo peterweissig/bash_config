@@ -378,7 +378,7 @@ function config_source_list_add_multiverse_restore() {
 
 #***************************[aptcacher]***************************************
 
-# 2020 09 27
+# 2020 12 30
 function config_source_list_aptcacher_set() {
 
     # print help
@@ -431,7 +431,9 @@ function config_source_list_aptcacher_set() {
         if [ $? -ne 0 ]; then return -2; fi
     # prepand path to all files
     for i in ${!filelist[@]}; do
-        filelist[$i]="${PATH_CONFIG}${filelist[$i]}"
+        if [ "filelist[$i]" != "" ]; then
+            filelist[$i]="${PATH_CONFIG}${filelist[$i]}"
+        fi
     done
     # add basic file
     filelist+=("$FILENAME_CONFIG")
