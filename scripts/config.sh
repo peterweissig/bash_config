@@ -431,16 +431,14 @@ function config_source_list_aptcacher_set() {
         if [ $? -ne 0 ]; then return -2; fi
     # prepand path to all files
     for i in ${!filelist[@]}; do
-        if [ "filelist[$i]" != "" ]; then
-            filelist[$i]="${PATH_CONFIG}${filelist[$i]}"
-        fi
+        filelist[$i]="${PATH_CONFIG}${filelist[$i]}"
     done
     # add basic file
     filelist+=("$FILENAME_CONFIG")
 
     # iterate over all files
     for i in ${!filelist[@]}; do
-        if [ "${filelist[$i]}" == "" ] || [ ! -e "${filelist[$i]}" ]; then
+        if [ "${filelist[$i]}" == "" ] || [ ! -f "${filelist[$i]}" ]; then
             continue;
         fi
         echo "modifying file ${filelist[$i]}"
@@ -453,7 +451,7 @@ function config_source_list_aptcacher_set() {
     done
 }
 
-# 2020 09 27
+# 2020 12 30
 function config_source_list_aptcacher_check() {
 
     # print help
@@ -495,7 +493,7 @@ function config_source_list_aptcacher_check() {
 
     # iterate over all files
     for i in ${!filelist[@]}; do
-        if [ "${filelist[$i]}" == "" ] || [ ! -e "${filelist[$i]}" ]; then
+        if [ "${filelist[$i]}" == "" ] || [ ! -f "${filelist[$i]}" ]; then
             continue;
         fi
         echo "checking file ${filelist[$i]}"
@@ -520,7 +518,7 @@ function config_source_list_aptcacher_check() {
     echo "nothing to do :-)"
 }
 
-# 2020 09 27
+# 2020 12 30
 function config_source_list_aptcacher_unset() {
 
     # print help and check for user agreement
@@ -553,7 +551,7 @@ function config_source_list_aptcacher_unset() {
 
     # iterate over all files
     for i in ${!filelist[@]}; do
-        if [ "${filelist[$i]}" == "" ] || [ ! -e "${filelist[$i]}" ]; then
+        if [ "${filelist[$i]}" == "" ] || [ ! -f "${filelist[$i]}" ]; then
             continue;
         fi
         echo "reverting file ${filelist[$i]}"
