@@ -708,7 +708,7 @@ function _config_install_list() {
 
 
 #***************************[check sources]***********************************
-# 2020 12 23
+# 2020 12 30
 
 alias _config_check_sources_vscode="_config_check_sources \
   microsoft.com vscode"
@@ -745,12 +745,32 @@ function _config_check_sources() {
 
 
     # check all source files
-    for file in /etc/apt/sources.list /etc/apt/sources.list.d/*.list; do
-        str="$(cat $file | grep -v "^#" \
+    FILENAME_CONFIG="/etc/apt/sources.list"
+    PATH_CONFIG="/etc/apt/sources.list.d/"
+
+    # find all entries within config path
+    readarray -t filelist <<< "$(ls "$PATH_CONFIG" 2>> /dev/null | \
+      grep -v -e ".save\$" )"
+        # check result
+        if [ $? -ne 0 ]; then return -2; fi
+    # prepand path to all files
+    for i in ${!filelist[@]}; do
+        filelist[$i]="${PATH_CONFIG}${filelist[$i]}"
+    done
+    # add basic file
+    filelist+=("$FILENAME_CONFIG")
+
+    # iterate over all files
+    for i in ${!filelist[@]}; do
+        if [ "${filelist[$i]}" == "" ] || [ ! -f "${filelist[$i]}" ]; then
+            continue;
+        fi
+
+        str="$(cat "${filelist[$i]}" | grep -v "^#" \
                | grep "$1" | grep "$2" | grep "$3" 2> /dev/null)"
         if [ "$?" -ne 0 ]; then continue; fi
         if [ "$str" != "" ]; then
-            echo "$file"
+            echo "${filelist[$i]}"
             return
         fi
     done
