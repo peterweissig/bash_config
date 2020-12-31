@@ -379,7 +379,7 @@ function config_source_list_add_multiverse_restore() {
 
 #***************************[aptcacher]***************************************
 
-# 2020 12 30
+# 2020 12 31
 function config_source_list_aptcacher_set() {
 
     # print help
@@ -389,7 +389,8 @@ function config_source_list_aptcacher_set() {
         return
     fi
     if [ "$1" == "--help" ]; then
-        echo "$FUNCNAME needs 1 parameter"
+        echo "$FUNCNAME has 1 option and needs 1 parameter"
+        echo "    [--https2http] downgrades https connections"
         echo "     #1: ip-address of apt-cacher-ng server"
         echo "This function changes all source-list files to use the"
         echo "apt-cacher server. If a server is already set, the source will"
@@ -398,18 +399,35 @@ function config_source_list_aptcacher_set() {
         return
     fi
 
-    # check parameter
-    if [ $# -ne 1 ]; then
+    # init variables
+    option_https=0
+    param_ip=""
+
+    # check and get parameter
+    params_ok=0
+    if [ $# -ge 1 ] && [ $# -le 2 ]; then
+        params_ok=1
+        param_ip="${@: -1}"
+        if [ $# -ge 2 ]; then
+            if [ "$1" == "--https2http" ]; then
+                option_https=1
+                echo -n "$FUNCNAME: Option Warning - "
+                echo "downgrading https is enabled."
+            else
+                params_ok=0
+            fi
+        fi
+    fi
+    if [ $params_ok -ne 1 ]; then
         echo "$FUNCNAME: Parameter Error."
         $FUNCNAME --help
         return -1
     fi
 
-    ipaddr="$1"
-    if [ "$ipaddr" != "localhost" ] && \
-      ! [[ "$ipaddr" =~ ((([0-9]{1,3})\.){3})([0-9]{1,3}) ]]; then
+    if [ "$param_ip" != "localhost" ] && \
+      ! [[ "$param_ip" =~ ((([0-9]{1,3})\.){3})([0-9]{1,3}) ]]; then
 
-        echo "$FUNCNAME: ip-address ($ipaddr) is not valid."
+        echo "$FUNCNAME: ip-address ($param_ip) is not valid."
         return -2
     fi
 
@@ -418,10 +436,22 @@ function config_source_list_aptcacher_set() {
 
     AWK_STRING="
         # update url of repositories
-        \$0 ~ /^deb/ && \$0 !~ /:3142/ {
-          sub( /http:\/\// , \"&${ipaddr}:3142/\" )
-        }
 
+        # update http
+        \$0 ~ /^deb/ && \$0 !~ /:3142/ {
+          sub( /http:\/\// , \"&${param_ip}:3142/\" )
+        }
+    "
+    # add https-part, if option is set
+    if [ $option_https -eq 1 ]; then
+        AWK_STRING+="
+            # update https
+            \$0 ~ /^deb/ && \$0 !~ /:3142/ && \$0 !~ /HTTPS\/\/\// {
+            sub( /https:\/\// , \"http://${param_ip}:3142/HTTPS///\" )
+            }
+        "
+    fi
+    AWK_STRING+="
         { print \$0 }
     "
 
@@ -452,7 +482,7 @@ function config_source_list_aptcacher_set() {
     done
 }
 
-# 2020 12 30
+# 2020 12 31
 function config_source_list_aptcacher_check() {
 
     # print help
@@ -492,6 +522,7 @@ function config_source_list_aptcacher_check() {
     # add basic file
     filelist+=("$FILENAME_CONFIG")
 
+    flag_https=0
     # iterate over all files
     for i in ${!filelist[@]}; do
         if [ "${filelist[$i]}" == "" ] || [ ! -f "${filelist[$i]}" ]; then
@@ -505,7 +536,8 @@ function config_source_list_aptcacher_check() {
 
         # check for https
         if [ "$(echo "$temp" | grep "https" | wc -w)" -gt 0 ]; then
-            echo "  ... can't handle https deb"
+            echo "  ... https debs need to be downgraded"
+            flag_https=1
         fi
 
         if [ "$(echo "$temp" | grep -v "https" | wc -w)" -gt 0 ]; then
@@ -516,10 +548,17 @@ function config_source_list_aptcacher_check() {
         fi
     done
 
+    if [ "${flag_https}" -eq 1 ]; then
+        echo ""
+        echo "$FUNCNAME: https debs can be updated by downgrading to http"
+        echo "call \$ config_source_list_aptcacher_set --https2http"
+        return
+    fi
+
     echo "nothing to do :-)"
 }
 
-# 2020 12 30
+# 2020 12 31
 function config_source_list_aptcacher_unset() {
 
     # print help and check for user agreement
@@ -533,6 +572,9 @@ function config_source_list_aptcacher_unset() {
         # update url of repositories
         $0 ~ /^deb/ && $0 ~ /:3142/ {
           sub( /\S+:3142\// , "http://" )
+
+          # check for HTTPS
+          sub( /http:\/\/HTTPS\/\/\// , "https://" )
         }
 
         { print $0 }
