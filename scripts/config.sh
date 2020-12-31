@@ -33,7 +33,7 @@ function config_update_system() {
 
 
 #***************************[nano]********************************************
-# 2020 12 29
+# 2020 12 31
 
 alias config_nano="nano_config"
 function nano_config() {
@@ -55,43 +55,44 @@ function nano_config() {
         return
     fi
 
-    param_no_header=0
-    param_sudo=0
+    # init variables
+    option_no_header=0
+    option_sudo=0
     param_file=""
 
-    # check parameter
-    param_ok=0
-    if [ $# -gt 0 ] && [ $# -lt 4 ]; then
-        param_ok=1
+    # check and get parameter
+    params_ok=0
+    if [ $# -ge 1 ] && [ $# -le 3 ]; then
+        params_ok=1
         param_file="${@: -1}"
-        if [ $# -gt 1 ]; then
+        if [ $# -ge 2 ]; then
             if [ "$1" == "--no-header" ]; then
-                param_no_header=1
+                option_no_header=1
             elif [ "$1" == "--sudo" ]; then
-                param_sudo=1
+                option_sudo=1
             else
-                param_ok=0
+                params_ok=0
             fi
         fi
-        if [ $# -gt 2 ]; then
+        if [ $# -ge 3 ]; then
             if [ "$2" == "--no-header" ]; then
-                param_no_header=1
+                option_no_header=1
             elif [ "$2" == "--sudo" ]; then
-                param_sudo=1
+                option_sudo=1
             else
-                param_ok=0
+                params_ok=0
             fi
         fi
     fi
-    if [ $param_ok -ne 1 ]; then
+    if [ $params_ok -ne 1 ]; then
         echo "$FUNCNAME: Parameter Error."
         $FUNCNAME --help
         return -1
     fi
 
     # call the modification function
-    if [ $param_sudo -eq 1 ]; then
-        if [ $param_no_header -eq 1 ]; then
+    if [ $option_sudo -eq 1 ]; then
+        if [ $option_no_header -eq 1 ]; then
             # sudo and no header
             _config_file_modify_full "$param_file" "" "" "auto" "" "sudo"
         else
@@ -100,7 +101,7 @@ function nano_config() {
               "default" "sudo"
         fi
     else
-        if [ $param_no_header -eq 1 ]; then
+        if [ $option_no_header -eq 1 ]; then
             # no header
             _config_file_modify "$param_file" "" "auto" ""
         else
