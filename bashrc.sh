@@ -65,9 +65,19 @@ export EDITOR='nano -w'
 
 
 #***************************[source]******************************************
-# 2020 04 21
+# 2021 01 01
 
-. ${CONFIG_PATH}scripts/functions.sh
+# internal or generic functions
+. ${CONFIG_PATH}scripts/functions/apt.sh
+. ${CONFIG_PATH}scripts/functions/file.sh
+. ${CONFIG_PATH}scripts/functions/help.sh
+. ${CONFIG_PATH}scripts/functions/info.sh
+. ${CONFIG_PATH}scripts/functions/install.sh
+. ${CONFIG_PATH}scripts/functions/internal.sh
+
+# concrete settings (usually with a ..._restore counter part)
 . ${CONFIG_PATH}scripts/config.sh
+
+# installing external packages
 . ${CONFIG_PATH}scripts/install.sh
-. ${CONFIG_PATH}scripts/help.sh
+
