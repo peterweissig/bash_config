@@ -76,7 +76,10 @@ export EDITOR='nano -w'
 . ${CONFIG_PATH}scripts/functions/internal.sh
 
 # concrete settings (usually with a ..._restore counter part)
-. ${CONFIG_PATH}scripts/config.sh
+. ${CONFIG_PATH}scripts/apt.sh
+. ${CONFIG_PATH}scripts/bash.sh
+. ${CONFIG_PATH}scripts/file.sh
+. ${CONFIG_PATH}scripts/user.sh
 
 # installing external packages
 . ${CONFIG_PATH}scripts/install.sh
