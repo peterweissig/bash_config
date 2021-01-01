@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2020 12 26
+# 2021 01 01
 
 function config_help_all() {
 
@@ -36,6 +36,7 @@ function config_help_all() {
     echo ""
     echo "info"
     echo -n "  "; config_info -h
+    echo -n "  "; _config_check_sources -h
     echo ""
     echo "install"
     echo -n "  "; echo "config_update_system  #no help"
@@ -43,6 +44,14 @@ function config_help_all() {
     echo -n "  "; config_install_vscode -h
     echo -n "  "; config_install_ros -h
     echo -n "  "; _config_install_list -h
+    echo ""
+    echo "file operations"
+    echo -n "  "; nano_config -h
+    echo -n "  "; nano_config_restore -h
+    echo -n "  "; config_file_backup -h
+    echo -n "  "; _config_file_modify -h
+    echo -n "  "; _config_file_restore -h
+    echo -n "  "; _config_file_return_last -h
     echo ""
     echo "general config functions"
     echo -n "  "; nano_config -h
@@ -55,11 +64,9 @@ function config_help_all() {
     echo "setup system"
     echo -n "  "; echo "config_bash_search(_restore)"
     echo -n "  "; echo "config_users_show_logins(_restore)"
-    echo -n "  "; echo "config_sources_add_multiverse(_restore)"
-    echo -n "  "; config_sources_aptcacher_set -h
-    echo -n "  "; config_sources_aptcacher_check -h
-    echo -n "  "; config_sources_aptcacher_unset -h
-    echo -n "  "; _config_check_sources -h
+    echo -n "  "; echo "config_source_list_add_multiverse(_restore)"
+    echo -n "  "; echo "config_source_list_aptcacher_(un)set"
+    echo -n "  "; config_source_list_aptcacher_check -h
     echo ""
     echo "user config"
     echo -n "  "; echo "config_bash_histsize(_restore)"
@@ -70,7 +77,7 @@ function config_help_all() {
 }
 
 #***************************[help]********************************************
-# 2020 12 26
+# 2021 01 01
 
 function config_help() {
 
@@ -90,7 +97,7 @@ function config_help() {
     echo -n "  "; config_install_vscode -h
     echo -n "  "; config_install_ros -h
     echo ""
-    echo "general config functions"
+    echo "file operations"
     echo -n "  "; nano_config -h
     echo -n "  "; nano_config_restore -h
     echo -n "  "; config_file_backup -h
@@ -98,8 +105,8 @@ function config_help() {
     echo "setup system"
     echo -n "  "; echo "config_bash_search(_restore)"
     echo -n "  "; echo "config_users_show_logins(_restore)"
-    echo -n "  "; echo "config_sources_add_multiverse(_restore)"
-    echo -n "  "; echo "config_sources_aptcacher_(un)set"
+    echo -n "  "; echo "config_source_list_add_multiverse(_restore)"
+    echo -n "  "; echo "config_source_list_aptcacher_(un)set"
     echo ""
     echo "user config"
     echo -n "  "; echo "config_bash_histsize(_restore)"
