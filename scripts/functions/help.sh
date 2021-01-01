@@ -36,6 +36,7 @@ function config_help_all() {
     echo ""
     echo "info"
     echo -n "  "; config_info -h
+    echo -n "  "; config_check_service -h
     echo -n "  "; _config_check_sources -h
     echo ""
     echo "install"
@@ -90,6 +91,7 @@ function config_help() {
     echo ""
     echo "info"
     echo -n "  "; config_info -h
+    echo -n "  "; config_check_service -h
     echo ""
     echo "install"
     echo -n "  "; echo "config_update_system  #no help"
