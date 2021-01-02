@@ -78,7 +78,7 @@ function config_help_all() {
 }
 
 #***************************[help]********************************************
-# 2021 01 01
+# 2021 01 02
 
 function config_help() {
 
@@ -109,6 +109,7 @@ function config_help() {
     echo -n "  "; echo "config_users_show_logins(_restore)"
     echo -n "  "; echo "config_source_list_add_multiverse(_restore)"
     echo -n "  "; echo "config_source_list_aptcacher_(un)set"
+    echo -n "  "; config_source_list_aptcacher_check -h
     echo ""
     echo "user config"
     echo -n "  "; echo "config_bash_histsize(_restore)"

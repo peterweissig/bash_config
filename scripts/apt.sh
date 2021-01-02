@@ -188,17 +188,22 @@ function config_source_list_aptcacher_set() {
     done
 }
 
-# 2020 12 31
+# 2021 01 02
 function config_source_list_aptcacher_check() {
 
     # print help
     if [ "$1" == "-h" ]; then
-        echo "$FUNCNAME"
+        echo "$FUNCNAME [<verbosity>]"
 
         return
     fi
     if [ "$1" == "--help" ]; then
-        echo "$FUNCNAME needs no parameter"
+        echo "$FUNCNAME needs 0-1 parameters"
+        echo "    [#1:]verbosity-level"
+        echo "         \"\"         some as normal (default)"
+        echo "         \"quiet\"    print only errors"
+        echo "         \"normal\"   print header and result(s)"
+        echo "         \"verbose\"  print also recommandations"
         echo "This function checks if config_source_list_aptcacher_set"
         echo "needs to be called."
 
@@ -212,6 +217,33 @@ function config_source_list_aptcacher_check() {
         return -1
     fi
 
+    param_verb="$1"
+    if [ "$param_verb" == "" ]; then
+        param_verb="normal"
+    fi
+    if [ "$param_verb" == "quiet" ]; then
+        param_verb=0
+    elif [ "$param_verb" == "normal" ]; then
+        param_verb=1
+    elif [ "$param_verb" == "verbose" ]; then
+        param_verb=2
+    else
+        echo "$FUNCNAME: Parameter Error for <verbosity>."
+        $FUNCNAME --help
+        return -1
+    fi
+
+    # check parameter
+    if [ $# -gt 1 ]; then
+        echo "$FUNCNAME: Parameter Error."
+        $FUNCNAME --help
+        return -1
+    fi
+
+    # initial output
+    if [ $param_verb -eq 1 ]; then
+        echo -n "checking apt-cacher sources ... "
+    fi
 
     FILENAME_CONFIG="/etc/apt/sources.list"
     PATH_CONFIG="/etc/apt/sources.list.d/"
@@ -220,7 +252,19 @@ function config_source_list_aptcacher_check() {
     readarray -t filelist <<< "$(ls "$PATH_CONFIG" 2>> /dev/null | \
       grep -v -e ".save\$" )"
         # check result
-        if [ $? -ne 0 ]; then return -2; fi
+        if [ $? -ne 0 ]; then
+            if [ $param_verb -eq 2 ]; then
+                echo "$FUNCNAME: error reading source files"
+            else
+                echo ""
+                echo -n "  error reading source files"
+                if [ $param_verb -ge 1 ]; then
+                    echo ""
+                fi
+            fi
+            return -2;
+        fi
+
     # prepand path to all files
     for i in ${!filelist[@]}; do
         filelist[$i]="${PATH_CONFIG}${filelist[$i]}"
@@ -228,13 +272,22 @@ function config_source_list_aptcacher_check() {
     # add basic file
     filelist+=("$FILENAME_CONFIG")
 
-    flag_https=0
+    error_flag=0
+    https_flag=0
     # iterate over all files
+    if [ $param_verb -ge 2 ]; then
+        echo ""
+    fi
     for i in ${!filelist[@]}; do
         if [ "${filelist[$i]}" == "" ] || [ ! -f "${filelist[$i]}" ]; then
             continue;
         fi
-        echo "checking file ${filelist[$i]}"
+
+        if [ $param_verb -ge 2 ]; then
+            echo "checking file ${filelist[$i]}"
+        else
+            https_flag=0
+        fi
 
         # check if already set
         temp="$(cat "${filelist[$i]}" | grep --extended-regexp "^deb" | \
@@ -242,26 +295,61 @@ function config_source_list_aptcacher_check() {
 
         # check for https
         if [ "$(echo "$temp" | grep "https" | wc -w)" -gt 0 ]; then
-            echo "  ... https debs need to be downgraded"
-            flag_https=1
+            if [ $param_verb -ge 2 ]; then
+                echo "  ... https debs need to be downgraded"
+                https_flag=1
+            else
+                echo ""
+                echo -n "  downgrade https in \"${filelist[$i]}\""
+            fi
+            error_flag=1
         fi
 
         if [ "$(echo "$temp" | grep -v "https" | wc -w)" -gt 0 ]; then
-            echo ""
-            echo "$FUNCNAME: sources in \"${filelist[$i]}\" can be updated"
-            echo "call \$ config_source_list_aptcacher_set"
-            return
+            if [ $param_verb -ge 2 ]; then
+                echo "  $FUNCNAME: sources in \"${filelist[$i]}\" can be updated"
+                echo "  run $ config_source_list_aptcacher_set"
+                return
+            else
+                echo ""
+                echo -n "  update \"${filelist[$i]}\""
+            fi
+            error_flag=1
         fi
     done
 
-    if [ "${flag_https}" -eq 1 ]; then
-        echo ""
-        echo "$FUNCNAME: https debs can be updated by downgrading to http"
-        echo "call \$ config_source_list_aptcacher_set --https2http"
-        return
+    if [ "$error_flag" -eq 1 ]; then
+        if [ $param_verb -ge 1 ]; then
+            echo ""
+        fi
+        return -3
+    else
+        if [ $param_verb -ge 1 ]; then
+            echo "ok"
+        fi
     fi
 
-    echo "nothing to do :-)"
+    if [ $param_verb -ge 2 ]; then
+        if [ "${https_flag}" -eq 1 ]; then
+            echo ""
+            echo "$FUNCNAME: https debs can be updated by downgrading to http"
+            echo "run $ config_source_list_aptcacher_set --https2http"
+            return -3
+        else
+            echo "nothing to do :-)"
+        fi
+    else
+        if [ "$error_flag" -eq 1 ]; then
+            if [ $param_verb -ge 1 ]; then
+                echo ""
+            fi
+            return -3
+        else
+            if [ $param_verb -ge 1 ]; then
+                echo "ok"
+            fi
+        fi
+    fi
 }
 
 # 2020 12 31
