@@ -1,24 +1,25 @@
 #!/bin/bash
 
 #***************************[backup config files]*****************************
-# 2020 10 06
+# 2021 01 01
 function config_file_backup() {
     # print help
     if [ "$1" == "-h" ]; then
-        echo "$FUNCNAME <filename>"
+        echo "$FUNCNAME <filename> [<subdir>]"
 
         return
     fi
     if [ "$1" == "--help" ]; then
-        echo "$FUNCNAME needs 1 parameter"
+        echo "$FUNCNAME needs 1-2 parameters"
         echo "     #1: full path of original file"
+        echo "    [#2:]additional subdirectory for storing backup"
         echo "This function stores an backup of the given config file."
 
         return
     fi
 
     # check parameter
-    if [ $# -ne 1 ]; then
+    if [ $# -lt 1 ] || [ $# -gt 2 ]; then
         echo "$FUNCNAME: Parameter Error."
         $FUNCNAME --help
         return -1
@@ -26,9 +27,24 @@ function config_file_backup() {
 
     # init variables
     param_filename="$1"
+    param_subdir="$2"
+
+    config_path_backup="$CONFIG_PATH_BACKUP"
+    if [ "$config_path_backup" != "" ] && \
+      [ "${config_path_backup: -1}" != "/" ]; then
+        config_path_backup="${config_path_backup}/"
+    fi
+    if [ "$param_subdir" != "" ]; then
+        config_path_backup="${config_path_backup}${param_subdir}"
+        if [ "$config_path_backup" != "" ] && \
+          [ "${config_path_backup: -1}" != "/" ]; then
+            config_path_backup="${config_path_backup}/"
+        fi
+    fi
+
 
     # call the general modification function
-    _file_backup_base "$param_filename" "$CONFIG_PATH_BACKUP" \
+    _file_backup_base "$param_filename" "$config_path_backup" \
       "suffix" "--yes" "sudo"
 }
 
