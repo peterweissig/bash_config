@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[service info]***********************************
-# 2021 01 01
+# 2021 01 02
 
 function config_check_service() {
 
@@ -16,9 +16,9 @@ function config_check_service() {
         echo "     #1: service to be checked"
         echo "    [#2:]verbosity-level"
         echo "         \"\"         some as normal (default)"
-        echo "         0 or \"quiet\"    print only errors"
-        echo "         1 or \"normal\"   print service name and result(s)"
-        echo "         2 or \"verbose\"  print also recommandations"
+        echo "         \"quiet\"    print only errors"
+        echo "         \"normal\"   print service name and result(s)"
+        echo "         \"verbose\"  print also recommandations"
         echo "    [#3:]flag for checking enabled/disabled status"
         echo "         \"\"         no check is done (default)"
         echo "         \"enabled\"  check, if service is enabled"
@@ -88,13 +88,21 @@ function config_check_service() {
 
     # check if service exists
     result="$(systemctl status "$param_name" 2> /dev/null)"
-    if [ $? -ne 0 ] || [ "$result" == "" ]; then
+    error_code="$?"
+    if [ "$result" == "" ]; then
         echo ""
         echo -n "  unknown service"
         if [ $param_verb -ge 1 ]; then
             echo ""
         fi
         return -2
+    elif [ "$error_code" -ne 0 ]; then
+        echo ""
+        echo -n "  service status error"
+        if [ $param_verb -ge 2 ]; then
+            echo ""
+            echo -n "    $ sudo systemctl status \"$param_name\""
+        fi
     fi
 
     error_flag=0
