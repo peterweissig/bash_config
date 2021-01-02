@@ -318,17 +318,6 @@ function config_source_list_aptcacher_check() {
         fi
     done
 
-    if [ "$error_flag" -eq 1 ]; then
-        if [ $param_verb -ge 1 ]; then
-            echo ""
-        fi
-        return -3
-    else
-        if [ $param_verb -ge 1 ]; then
-            echo "ok"
-        fi
-    fi
-
     if [ $param_verb -ge 2 ]; then
         if [ "${https_flag}" -eq 1 ]; then
             echo ""
