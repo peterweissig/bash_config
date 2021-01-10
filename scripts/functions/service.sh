@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[service info]***********************************
-# 2021 01 02
+# 2021 01 10
 
 function config_check_service() {
 
@@ -68,12 +68,6 @@ function config_check_service() {
         $FUNCNAME --help
         return -1
     fi
-    if [ "$param_enabled" != "" ] && [ "$param_enabled" != "enabled" ] && \
-      [ "$param_enabled" != "disabled" ]; then
-        echo "$FUNCNAME: Parameter Error for <enabled>."
-        $FUNCNAME --help
-        return -1
-    fi
     if [ "$param_active" != "" ] && [ "$param_active" != "active" ] && \
       [ "$param_active" != "inactive" ]; then
         echo "$FUNCNAME: Parameter Error for <active>."
@@ -86,6 +80,7 @@ function config_check_service() {
         echo -n "checking service \"$param_name\" ... "
     fi
 
+    error_flag=0
     # check if service exists
     result="$(systemctl status "$param_name" 2> /dev/null)"
     error_code="$?"
@@ -97,15 +92,18 @@ function config_check_service() {
         fi
         return -2
     elif [ "$error_code" -ne 0 ]; then
-        echo ""
-        echo -n "  service status error"
-        if [ $param_verb -ge 2 ]; then
+        if [ $param_verb -ge 1 ] || [ "$param_active" == "active" ] || \
+          [ "$param_enabled" == "enabled" ]; then
+            error_flag=1
             echo ""
-            echo -n "    $ sudo systemctl status \"$param_name\""
+            echo -n "  service status error"
+            if [ $param_verb -ge 2 ]; then
+                echo ""
+                echo -n "    $ sudo systemctl status \"$param_name\""
+            fi
         fi
     fi
 
-    error_flag=0
     # check, if service is active
     if [ "$param_active" != "" ]; then
         result="$(systemctl is-active "$param_name" 2> /dev/null)"
