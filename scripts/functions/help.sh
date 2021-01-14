@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2021 01 01
+# 2021 01 14
 
 function config_help_all() {
 
@@ -69,6 +69,12 @@ function config_help_all() {
     echo -n "  "; echo "config_source_list_aptcacher_(un)set"
     echo -n "  "; config_source_list_aptcacher_check -h
     echo ""
+    echo "cpu"
+    echo -n "  "; config_cpu_freq_show -h
+    echo -n "  "; config_cpu_temp_show -h
+    echo -n "  "; config_cpu_mode_show -h
+    echo -n "  "; config_cpu_mode_set -h
+    echo ""
     echo "user config"
     echo -n "  "; echo "config_bash_histsize(_restore)"
     echo -n "  "; echo "config_bash_search_local(_restore)"
@@ -78,7 +84,7 @@ function config_help_all() {
 }
 
 #***************************[help]********************************************
-# 2021 01 02
+# 2021 01 14
 
 function config_help() {
 
@@ -110,6 +116,11 @@ function config_help() {
     echo -n "  "; echo "config_source_list_add_multiverse(_restore)"
     echo -n "  "; echo "config_source_list_aptcacher_(un)set"
     echo -n "  "; config_source_list_aptcacher_check -h
+    echo ""
+    echo "cpu"
+    echo -n "  "; config_cpu_freq_show -h
+    echo -n "  "; config_cpu_temp_show -h
+    echo -n "  "; config_cpu_mode_show -h
     echo ""
     echo "user config"
     echo -n "  "; echo "config_bash_histsize(_restore)"
