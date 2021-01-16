@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[service info]***********************************
-# 2021 01 10
+# 2021 01 15
 
 function config_check_service() {
 
@@ -80,7 +80,9 @@ function config_check_service() {
         echo -n "checking service \"$param_name\" ... "
     fi
 
-    error_flag=0
+    error_flag_service=0 # not using "error_flag" as it might be used by
+                         # a wrapping functions
+
     # check if service exists
     result="$(systemctl status "$param_name" 2> /dev/null)"
     error_code="$?"
@@ -94,7 +96,7 @@ function config_check_service() {
     elif [ "$error_code" -ne 0 ]; then
         if [ $param_verb -ge 1 ] || [ "$param_active" == "active" ] || \
           [ "$param_enabled" == "enabled" ]; then
-            error_flag=1
+            error_flag_service=1
             echo ""
             echo -n "  service status error"
             if [ $param_verb -ge 2 ]; then
@@ -108,7 +110,7 @@ function config_check_service() {
     if [ "$param_active" != "" ]; then
         result="$(systemctl is-active "$param_name" 2> /dev/null)"
         if [ "$result" != "$param_active" ]; then
-            error_flag=1
+            error_flag_service=1
             echo ""
             echo -n "  service not ${param_active}"
             if [ $param_verb -ge 2 ]; then
@@ -126,7 +128,7 @@ function config_check_service() {
     if [ "$param_enabled" != "" ]; then
         result="$(systemctl is-enabled "$param_name" 2> /dev/null)"
         if [ "$result" != "$param_enabled" ]; then
-            error_flag=1
+            error_flag_service=1
             echo ""
             echo -n "  service not ${param_enabled}"
             if [ $param_verb -ge 2 ]; then
@@ -141,7 +143,7 @@ function config_check_service() {
     fi
 
     # output result
-    if [ "$error_flag" -eq 1 ]; then
+    if [ "$error_flag_service" -eq 1 ]; then
         if [ $param_verb -ge 1 ]; then
             echo ""
         fi
