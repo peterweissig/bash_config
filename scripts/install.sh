@@ -55,7 +55,7 @@ function config_install_nextcloud() {
 
 
 #***************************[vs code]*****************************************
-# 2020 12 30
+# 2021 01 23
 
 function config_install_vscode() {
 
@@ -97,6 +97,7 @@ function config_install_vscode() {
     url_repository="https://packages.microsoft.com/repos/vscode"
     url_keys="https://packages.microsoft.com/keys/microsoft.asc"
     key_path="/usr/share/keyrings/"
+    key_name="packages.microsoft.gpg"
     tempfile="$(mktemp)"
     source_list="/etc/apt/sources.list.d/vscode.list"
 
@@ -114,7 +115,7 @@ function config_install_vscode() {
         wget --output-document=- "$url_keys" | gpg --dearmor > "$tempfile"
         if [ $? -ne 0 ]; then return -4; fi
         # install keys
-        sudo install -o root -g root -m 644 "$tempfile" "$key_path"
+        sudo install -o root -g root -m 644 "$tempfile" "${key_path}${key_name}"
         if [ $? -ne 0 ]; then return -5; fi
         # remove key file
         rm "$tempfile"
