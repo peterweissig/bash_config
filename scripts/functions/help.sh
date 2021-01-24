@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2021 01 14
+# 2021 01 24
 
 function config_help_all() {
 
@@ -47,14 +47,6 @@ function config_help_all() {
     echo -n "  "; _config_install_list -h
     echo ""
     echo "file operations"
-    echo -n "  "; nano_config -h
-    echo -n "  "; nano_config_restore -h
-    echo -n "  "; config_file_backup -h
-    echo -n "  "; _config_file_modify -h
-    echo -n "  "; _config_file_restore -h
-    echo -n "  "; _config_file_return_last -h
-    echo ""
-    echo "general config functions"
     echo -n "  "; nano_config -h
     echo -n "  "; nano_config_restore -h
     echo -n "  "; config_file_backup -h
