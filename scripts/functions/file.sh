@@ -110,7 +110,7 @@ function _config_file_modify() {
 
 }
 
-# 2020 12 29
+# 2021 01 26
 function _config_file_modify_full() {
 
     # print help
@@ -121,7 +121,7 @@ function _config_file_modify_full() {
         return
     fi
     if [ "$1" == "--help" ]; then
-        echo "$FUNCNAME needs 1-5 parameters"
+        echo "$FUNCNAME needs 1-6 parameters"
         echo "     #1: full path of original file"
         echo "    [#2:]additional subdirectory for storing backup"
         echo "    [#3:]a valid awk script"
@@ -388,6 +388,7 @@ function _config_file_restore() {
 
 }
 
+# 2020 01 26
 function _config_file_restore_full() {
 
     # print help
