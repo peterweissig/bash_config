@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2021 01 24
+# 2021 01 26
 
 function config_help_all() {
 
@@ -56,6 +56,7 @@ function config_help_all() {
     echo ""
     echo "setup system"
     echo -n "  "; echo "config_bash_search(_restore)"
+    echo -n "  "; echo "config_sudo_no_password(_restore)"
     echo -n "  "; echo "config_users_show_logins(_restore)"
     echo -n "  "; echo "config_source_list_add_multiverse(_restore)"
     echo -n "  "; echo "config_source_list_aptcacher_(un)set"
@@ -76,7 +77,7 @@ function config_help_all() {
 }
 
 #***************************[help]********************************************
-# 2021 01 14
+# 2021 01 26
 
 function config_help() {
 
@@ -104,6 +105,7 @@ function config_help() {
     echo ""
     echo "setup system"
     echo -n "  "; echo "config_bash_search(_restore)"
+    echo -n "  "; echo "config_sudo_no_password(_restore)"
     echo -n "  "; echo "config_users_show_logins(_restore)"
     echo -n "  "; echo "config_source_list_add_multiverse(_restore)"
     echo -n "  "; echo "config_source_list_aptcacher_(un)set"
