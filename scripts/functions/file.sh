@@ -388,12 +388,12 @@ function _config_file_restore() {
 
 }
 
-# 2020 01 26
+# 2021 01 26
 function _config_file_restore_full() {
 
     # print help
     if [ "$1" == "-h" ]; then
-        echo "$FUNCNAME <filename> [<subdir>] [<flag>]"
+        echo "$FUNCNAME <filename> [<subdir>] [<flag>] [<copy-with-sudo>]"
 
         return
     fi
@@ -410,6 +410,8 @@ function _config_file_restore_full() {
         echo "                               one backup (only after)"
         echo "         \"auto\"          ... fails if there are not at least"
         echo "                               one backup"
+        echo "    [#4:]using sudo to compare and copy file"
+        echo "         (must be \"sudo\" to be in effect)"
         echo "This function restores the formerly modified config file."
         echo "The related backup-files will be removed!"
 
@@ -417,7 +419,7 @@ function _config_file_restore_full() {
     fi
 
     # check parameter
-    if [ $# -lt 1 ] || [ $# -gt 3 ]; then
+    if [ $# -lt 1 ] || [ $# -gt 4 ]; then
         echo "$FUNCNAME: Parameter Error."
         $FUNCNAME --help
         return -1
@@ -434,6 +436,7 @@ function _config_file_restore_full() {
     param_filename="$1"
     param_subdir="$2"
     param_flag="$3"
+    param_sudo="$4"
 
     flag_backup_once="0"
     flag_create_config="0"
@@ -450,6 +453,11 @@ function _config_file_restore_full() {
             $FUNCNAME --help
             return -1
         fi
+    fi
+    if [ "$param_sudo" != "" ] && [ "$param_sudo" != "sudo" ]; then
+        echo "$FUNCNAME: copy-with-sudo must be \"\" (empty) or sudo."
+        echo "  (not \"$param_sudo\")"
+        return -1
     fi
 
     config_path_backup="$CONFIG_PATH_BACKUP"
@@ -523,7 +531,14 @@ function _config_file_restore_full() {
     fi
 
     # check last config
-    if [ "$(diff --brief "$filename_last" "$param_filename")" != "" ]; then
+
+    if [ "$param_sudo" != "sudo" ]; then
+        changes="$(diff --brief "$filename_last" "$param_filename")"
+    else
+        changes="$(sudo diff --brief "$filename_last" "$param_filename")"
+    fi
+    if [ "$changes" != "" ]; then
+        unset changes
         echo "File \"$param_filename\" has been changed!"
         echo "  (it is NOT identical to \"$filename_last\")"
 
@@ -546,7 +561,8 @@ function _config_file_restore_full() {
         fi
 
         #// move file back to original position
-        if [ "$(stat -c '%U' "$param_filename")" == "root" ]; then
+        if [ "$param_sudo" == "sudo" ] ||
+          [ "$(stat -c '%U' "$param_filename")" == "root" ]; then
             echo "sudo mv \"$filename_last\" \"$param_filename\""
             sudo mv "$filename_last" "$param_filename"
             sudo chown root:root "$param_filename"
@@ -556,7 +572,8 @@ function _config_file_restore_full() {
         fi
     else
         #// remove original file
-        if [ "$(stat -c '%U' "$param_filename")" == "root" ]; then
+        if [ "$param_sudo" == "sudo" ] ||
+          [ "$(stat -c '%U' "$param_filename")" == "root" ]; then
             echo "sudo rm \"$param_filename\""
             sudo rm "$param_filename"
         else
