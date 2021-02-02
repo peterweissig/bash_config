@@ -31,28 +31,19 @@ fi
 
 
 #***************************[paths and files]*********************************
-# 2020 12 27
+# 2021 02 02
 
 # this is only a local variable - no export
 CONFIG_PATH="$(realpath "$(dirname "${BASH_SOURCE}")" )/"
 
 
+# load and check data dir
 if [ "$CONFIG_PATH_BACKUP" == "" ]; then
-    # check if an alternative path exists
-    if [ "$REPO_BASH_DATA_PATH" != "" ] && \
-      [ -d "$REPO_BASH_DATA_PATH" ]; then
-        export CONFIG_PATH_BACKUP="${REPO_BASH_DATA_PATH}config/"
-    else
-        export CONFIG_PATH_BACKUP="${CONFIG_PATH}backup/"
-    fi
-
-    # check if config folder exists
-    if [ ! -d "$CONFIG_PATH_BACKUP" ]; then
-        echo "creating backup folder for \"config\""
-        echo "    ($CONFIG_PATH_BACKUP)"
-        mkdir -p "$CONFIG_PATH_BACKUP"
-    fi
+    CONFIG_PATH_BACKUP="$(_repo_bash_data_dirs_get --mkdir "config" \
+      "${CONFIG_PATH}backup/")"
 fi
+_repo_bash_data_dirs_check --rmdir "$CONFIG_PATH_BACKUP" \
+  "config" "${CONFIG_PATH}backup/"
 
 
 
