@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2021 01 26
+# 2021 02 06
 
 function config_help_all() {
 
@@ -49,6 +49,8 @@ function config_help_all() {
     echo "file operations"
     echo -n "  "; nano_config -h
     echo -n "  "; nano_config_restore -h
+    echo -n "  "; config_bookmarks_edit -h
+    echo -n "  "; config_bookmarks_restore -h
     echo -n "  "; config_file_backup -h
     echo -n "  "; _config_file_modify -h
     echo -n "  "; _config_file_restore -h
@@ -77,7 +79,7 @@ function config_help_all() {
 }
 
 #***************************[help]********************************************
-# 2021 01 26
+# 2021 02 06
 
 function config_help() {
 
@@ -101,6 +103,8 @@ function config_help() {
     echo "file operations"
     echo -n "  "; nano_config -h
     echo -n "  "; nano_config_restore -h
+    echo -n "  "; config_bookmarks_edit -h
+    echo -n "  "; config_bookmarks_restore -h
     echo -n "  "; config_file_backup -h
     echo ""
     echo "setup system"
