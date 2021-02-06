@@ -1,22 +1,23 @@
 #!/bin/bash
 
 #***************************[nano]********************************************
-# 2020 12 31
+# 2021 02 06
 
 alias config_nano="nano_config"
 function nano_config() {
 
     # print help
     if [ "$1" == "-h" ]; then
-        echo "$FUNCNAME [--no-header] [--sudo] <filename>"
+        echo "$FUNCNAME [--no-header] [--sudo] <filename> [<subdir>]"
 
         return
     fi
     if [ "$1" == "--help" ]; then
-        echo "$FUNCNAME has 2 options and needs 1 parameter"
+        echo "$FUNCNAME has 2 options and needs 1-2 parameters"
         echo "    [--no-header] avoids adding header info"
         echo "    [--sudo]      uses always sudo to access the file"
         echo "     #1: full path of original file"
+        echo "    [#2:]additional subdirectory for storing backup"
         echo "This function executes nano to modify the given config file."
         echo "Before and after the operation a backup-file will be created."
 
@@ -27,29 +28,31 @@ function nano_config() {
     option_no_header=0
     option_sudo=0
     param_file=""
+    param_subdir=""
 
     # check and get parameter
     params_ok=0
-    if [ $# -ge 1 ] && [ $# -le 3 ]; then
+    if [ $# -ge 1 ] && [ $# -le 4 ]; then
         params_ok=1
-        param_file="${@: -1}"
-        if [ $# -ge 2 ]; then
+        while true; do
             if [ "$1" == "--no-header" ]; then
                 option_no_header=1
+                shift
+                continue
             elif [ "$1" == "--sudo" ]; then
                 option_sudo=1
+                shift
+            elif [[ "$1" =~ ^-- ]]; then
+                echo "$FUNCNAME: Unknown option \"$1\"."
+                return -1
             else
-                params_ok=0
+                break
             fi
-        fi
-        if [ $# -ge 3 ]; then
-            if [ "$2" == "--no-header" ]; then
-                option_no_header=1
-            elif [ "$2" == "--sudo" ]; then
-                option_sudo=1
-            else
-                params_ok=0
-            fi
+        done
+        param_file="$1"
+        param_subdir="$2"
+        if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+            params_ok=0
         fi
     fi
     if [ $params_ok -ne 1 ]; then
@@ -62,23 +65,26 @@ function nano_config() {
     if [ $option_sudo -eq 1 ]; then
         if [ $option_no_header -eq 1 ]; then
             # sudo and no header
-            _config_file_modify_full "$param_file" "" "" "auto" "" "sudo"
+            _config_file_modify_full "$param_file" "$param_subdir" "" \
+              "auto" "" "sudo"
         else
             # sudo
-            _config_file_modify_full "$param_file" "" "" "auto" \
-              "default" "sudo"
+            _config_file_modify_full "$param_file" "$param_subdir" "" \
+              "auto" "default" "sudo"
         fi
     else
         if [ $option_no_header -eq 1 ]; then
             # no header
-            _config_file_modify "$param_file" "" "auto" ""
+            _config_file_modify_full "$param_file" "$param_subdir" "" \
+              "auto" ""
         else
             # simple version
-            _config_file_modify "$param_file"
+            _config_file_modify_full "$param_file" "$param_subdir" ""
         fi
     fi
 }
 
+# 2020 12 31
 alias config_nano_restore="nano_config_restore"
 function nano_config_restore() {
 

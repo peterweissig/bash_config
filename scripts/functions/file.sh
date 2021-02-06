@@ -51,7 +51,7 @@ function config_file_backup() {
 
 
 #***************************[modify config files]*****************************
-# 2020 10 06
+# 2021 02 06
 function _config_file_modify() {
 
     # print help
@@ -72,7 +72,8 @@ function _config_file_modify() {
         echo "         \"auto\"          ... automatically switches between"
         echo "                               normal and create-config"
         echo "    [#4:]additional header (default date and username)"
-        echo "         if not set (\"\"), no header will be added"
+        echo "         if set to \"default\", will create default header"
+        echo "         if set empty (\"\"), no header will be added"
         echo "This function modifies the given config file - "
         echo "either by running the given awk script or by executing nano."
         echo "Before and after the operation a backup-file will be created."
@@ -110,7 +111,7 @@ function _config_file_modify() {
 
 }
 
-# 2021 01 26
+# 2021 02 06
 function _config_file_modify_full() {
 
     # print help
@@ -134,7 +135,7 @@ function _config_file_modify_full() {
         echo "                               normal and create-config"
         echo "    [#5:]additional header (default date and username)"
         echo "         if set to \"default\", will create default header"
-        echo "         if not set (\"\"), no header will be added"
+        echo "         if set empty (\"\"), no header will be added"
         echo "    [#6:]using sudo to read and copy file"
         echo "         (must be \"sudo\" to be in effect)"
         echo "This function modifies the given config file - "
