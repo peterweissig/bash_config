@@ -56,7 +56,7 @@ export EDITOR='nano -w'
 
 
 #***************************[source]******************************************
-# 2021 01 26
+# 2021 02 06
 
 # internal or generic functions
 . ${CONFIG_PATH}scripts/functions/apt.sh
@@ -70,6 +70,7 @@ export EDITOR='nano -w'
 # concrete settings (usually with a ..._restore counter part)
 . ${CONFIG_PATH}scripts/apt.sh
 . ${CONFIG_PATH}scripts/bash.sh
+. ${CONFIG_PATH}scripts/bookmarks.sh
 . ${CONFIG_PATH}scripts/cpu.sh
 . ${CONFIG_PATH}scripts/file.sh
 . ${CONFIG_PATH}scripts/user.sh
