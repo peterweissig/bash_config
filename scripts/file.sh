@@ -84,32 +84,36 @@ function nano_config() {
     fi
 }
 
-# 2020 12 31
+# 2020 02 06
 alias config_nano_restore="nano_config_restore"
 function nano_config_restore() {
 
     # print help
     if [ "$1" == "-h" ]; then
-        echo "$FUNCNAME <filename>"
+        echo "$FUNCNAME <filename> [<subdir>]"
 
         return
     fi
     if [ "$1" == "--help" ]; then
-        echo "$FUNCNAME needs 1 parameter"
+        echo "$FUNCNAME needs 1-2 parameters"
         echo "     #1: full path of original file"
+        echo "    [#2:]additional subdirectory for storing backup"
         echo "This function restores the formerly modified config file."
         echo "The related backup-files will be removed!"
 
         return
     fi
 
+    param_file="$1"
+    param_subdir="$2"
+
     # check parameter
-    if [ $# -ne 1 ]; then
+    if [ $# -lt 1 ] || [ $# -gt 2 ]; then
         echo "$FUNCNAME: Parameter Error."
         $FUNCNAME --help
         return -1
     fi
 
-    # call the general modification function
-    _config_file_restore "$1"
+    # call the general restore function
+    _config_file_restore_full "$param_file" "$param_subdir"
 }
