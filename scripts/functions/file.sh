@@ -389,7 +389,7 @@ function _config_file_restore() {
 
 }
 
-# 2021 01 26
+# 2021 02 06
 function _config_file_restore_full() {
 
     # print help
@@ -399,7 +399,7 @@ function _config_file_restore_full() {
         return
     fi
     if [ "$1" == "--help" ]; then
-        echo "$FUNCNAME needs 1-3 parameters"
+        echo "$FUNCNAME needs 1-4 parameters"
         echo "     #1: full path of original file"
         echo "    [#2:]additional subdirectory for storing backup"
         echo "    [#3:]flag"
@@ -442,7 +442,7 @@ function _config_file_restore_full() {
     flag_backup_once="0"
     flag_create_config="0"
     flag_auto_config="0"
-    if [ $# -gt 1 ]; then
+    if [ $# -gt 2 ]; then
         if [ "$param_flag" == "backup-once" ]; then
             flag_backup_once="1"
         elif [ "$param_flag" == "create-config" ]; then
