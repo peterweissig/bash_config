@@ -56,26 +56,25 @@ export EDITOR='nano -w'
 
 
 #***************************[source]******************************************
-# 2021 02 06
+# 2021 03 24
 
 # internal or generic functions
-. ${CONFIG_PATH}scripts/functions/apt.sh
-. ${CONFIG_PATH}scripts/functions/file.sh
-. ${CONFIG_PATH}scripts/functions/help.sh
-. ${CONFIG_PATH}scripts/functions/info.sh
-. ${CONFIG_PATH}scripts/functions/install.sh
-. ${CONFIG_PATH}scripts/functions/internal.sh
-. ${CONFIG_PATH}scripts/functions/service.sh
+source "${CONFIG_PATH}scripts/functions/apt.sh"
+source "${CONFIG_PATH}scripts/functions/file.sh"
+source "${CONFIG_PATH}scripts/functions/help.sh"
+source "${CONFIG_PATH}scripts/functions/info.sh"
+source "${CONFIG_PATH}scripts/functions/install.sh"
+source "${CONFIG_PATH}scripts/functions/internal.sh"
+source "${CONFIG_PATH}scripts/functions/service.sh"
 
 # concrete settings (usually with a ..._restore counter part)
-. ${CONFIG_PATH}scripts/apt.sh
-. ${CONFIG_PATH}scripts/bash.sh
-. ${CONFIG_PATH}scripts/bookmarks.sh
-. ${CONFIG_PATH}scripts/cpu.sh
-. ${CONFIG_PATH}scripts/file.sh
-. ${CONFIG_PATH}scripts/user.sh
-. ${CONFIG_PATH}scripts/sudo.sh
+source "${CONFIG_PATH}scripts/apt.sh"
+source "${CONFIG_PATH}scripts/bash.sh"
+source "${CONFIG_PATH}scripts/bookmarks.sh"
+source "${CONFIG_PATH}scripts/cpu.sh"
+source "${CONFIG_PATH}scripts/file.sh"
+source "${CONFIG_PATH}scripts/user.sh"
+source "${CONFIG_PATH}scripts/sudo.sh"
 
 # installing external packages
-. ${CONFIG_PATH}scripts/install.sh
-
+source "${CONFIG_PATH}scripts/install.sh"
