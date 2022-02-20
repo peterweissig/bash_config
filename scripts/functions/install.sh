@@ -95,3 +95,34 @@ function _config_install_list() {
         fi
     done
 }
+
+# 2022 02 20
+function config_install_show() {
+
+    # print help
+    if [ "$1" == "-h" ]; then
+        echo "$FUNCNAME"
+
+        return
+    fi
+    if [ "$1" == "--help" ]; then
+        echo "$FUNCNAME needs 0 parameters"
+        echo "This function lists all manually installed packages."
+
+        return
+    fi
+
+    # check parameter
+    if [ $# -gt 0 ]; then
+        echo "$FUNCNAME: Parameter Error."
+        $FUNCNAME --help
+        return -1
+    fi
+
+    # based on https://askubuntu.com/questions/2389
+    LIST_CURRENT="$(apt-mark showmanual | sort --unique)"
+    LIST_INIT="$(gzip -dc /var/log/installer/initial-status.gz | \
+      grep "^Package: " | grep -o -E "[^: ]+$" | sort --unique)"
+
+    comm -23 <(echo "$LIST_CURRENT") <(echo "$LIST_INIT")
+}

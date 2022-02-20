@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2021 02 06
+# 2022 02 20
 
 function config_help_all() {
 
@@ -41,6 +41,7 @@ function config_help_all() {
     echo ""
     echo "install"
     echo -n "  "; echo "config_update_system  #no help"
+    echo -n "  "; config_install_show -h
     echo -n "  "; config_install_nextcloud -h
     echo -n "  "; config_install_vscode -h
     echo -n "  "; config_install_ros -h
@@ -79,7 +80,7 @@ function config_help_all() {
 }
 
 #***************************[help]********************************************
-# 2021 02 06
+# 2022 02 20
 
 function config_help() {
 
@@ -96,6 +97,7 @@ function config_help() {
     echo ""
     echo "install"
     echo -n "  "; echo "config_update_system  #no help"
+    echo -n "  "; config_install_show -h
     echo -n "  "; config_install_nextcloud -h
     echo -n "  "; config_install_vscode -h
     echo -n "  "; config_install_ros -h
