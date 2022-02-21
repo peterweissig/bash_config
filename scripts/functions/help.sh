@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2022 02 20
+# 2022 02 21
 
 function config_help_all() {
 
@@ -46,6 +46,7 @@ function config_help_all() {
     echo -n "  "; config_install_vscode -h
     echo -n "  "; config_install_ros -h
     echo -n "  "; _config_install_list -h
+    echo -n "  "; _config_uninstall_list -h
     echo ""
     echo "file operations"
     echo -n "  "; nano_config -h
