@@ -55,7 +55,7 @@ function config_install_nextcloud() {
 
 
 #***************************[vs code]*****************************************
-# 2021 01 23
+# 2022 03 27
 
 function config_install_vscode() {
 
@@ -94,7 +94,7 @@ function config_install_vscode() {
 
     # install based on website
     #  https://code.visualstudio.com/docs/setup/linux
-    url_repository="https://packages.microsoft.com/repos/vscode"
+    url_repository="https://packages.microsoft.com/repos/code"
     url_keys="https://packages.microsoft.com/keys/microsoft.asc"
     key_path="/usr/share/keyrings/"
     key_name="packages.microsoft.gpg"
