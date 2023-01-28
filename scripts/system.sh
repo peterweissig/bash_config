@@ -10,7 +10,8 @@ function config_password_disable_rejection() {
     AWK_STRING='
         # disabling password rejection
         $0 ~ /^# enforcing = 1/ {
-          $0 = "enforcing = 0"
+          print \"# [EDIT]: \",\$0
+          $0 = "enforcing = 0";
         }
 
         { print $0 }
