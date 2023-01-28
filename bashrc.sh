@@ -56,7 +56,7 @@ export EDITOR='nano -w'
 
 
 #***************************[source]******************************************
-# 2021 03 24
+# 2023 01 28
 
 # internal or generic functions
 source "${CONFIG_PATH}scripts/functions/apt.sh"
@@ -75,6 +75,7 @@ source "${CONFIG_PATH}scripts/cpu.sh"
 source "${CONFIG_PATH}scripts/file.sh"
 source "${CONFIG_PATH}scripts/user.sh"
 source "${CONFIG_PATH}scripts/sudo.sh"
+source "${CONFIG_PATH}scripts/system.sh"
 
 # installing external packages
 source "${CONFIG_PATH}scripts/install.sh"

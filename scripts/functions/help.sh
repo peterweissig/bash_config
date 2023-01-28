@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2022 02 21
+# 2023 01 28
 
 function config_help_all() {
 
@@ -61,7 +61,9 @@ function config_help_all() {
     echo "setup system"
     echo -n "  "; echo "config_bash_search(_restore)"
     echo -n "  "; echo "config_sudo_no_password(_restore)"
-    echo -n "  "; echo "config_users_show_logins(_restore)"
+    echo -n "  "; echo "config_password_disable_rejection(_restore)"
+    echo ""
+    echo "apt"
     echo -n "  "; echo "config_source_list_add_multiverse(_restore)"
     echo -n "  "; echo "config_source_list_aptcacher_(un)set"
     echo -n "  "; config_source_list_aptcacher_check -h
@@ -76,12 +78,13 @@ function config_help_all() {
     echo -n "  "; echo "config_bash_histsize(_restore)"
     echo -n "  "; echo "config_bash_search_local(_restore)"
     echo -n "  "; echo "config_users_hide_login(_restore)"
+    echo -n "  "; echo "config_users_show_logins(_restore)"
     echo -n "  "; config_clear_home -h
     echo ""
 }
 
 #***************************[help]********************************************
-# 2022 02 20
+# 2023 01 28
 
 function config_help() {
 
@@ -113,7 +116,9 @@ function config_help() {
     echo "setup system"
     echo -n "  "; echo "config_bash_search(_restore)"
     echo -n "  "; echo "config_sudo_no_password(_restore)"
-    echo -n "  "; echo "config_users_show_logins(_restore)"
+    echo -n "  "; echo "config_password_disable_rejection(_restore)"
+    echo ""
+    echo "apt"
     echo -n "  "; echo "config_source_list_add_multiverse(_restore)"
     echo -n "  "; echo "config_source_list_aptcacher_(un)set"
     echo -n "  "; config_source_list_aptcacher_check -h
@@ -127,6 +132,7 @@ function config_help() {
     echo -n "  "; echo "config_bash_histsize(_restore)"
     echo -n "  "; echo "config_bash_search_local(_restore)"
     echo -n "  "; echo "config_users_hide_login(_restore)"
+    echo -n "  "; echo "config_users_show_logins(_restore)"
     echo -n "  "; config_clear_home -h
     echo ""
 }

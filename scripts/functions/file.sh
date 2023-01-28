@@ -111,7 +111,7 @@ function _config_file_modify() {
 
 }
 
-# 2021 02 06
+# 2023 01 28
 function _config_file_modify_full() {
 
     # print help
@@ -212,7 +212,7 @@ function _config_file_modify_full() {
     if [ $? -ne 0 ]; then return -2; fi
 
     # check for already existing backup
-    if [ "$flag_backup_once" -ne 0 ]; then
+    if [ "$flag_backup_once" -ne 0 ] && [ -d "$config_path_backup" ]; then
         find_result="$(find "$config_path_backup" -regextype sed \
           -regex ".*/[0-9_]*${filebase_simple}[0-9_]*" -print -quit)"
         if [ $? -ne 0 ]; then return -3; fi
