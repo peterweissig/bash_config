@@ -96,7 +96,7 @@ function _config_install_list() {
     done
 }
 
-# 2022 02 21
+# 2023 09 24
 function _config_uninstall_list() {
 
     # print help
@@ -109,9 +109,9 @@ function _config_uninstall_list() {
         echo "$FUNCNAME needs 1-3 parameters"
         echo "     #1: list of all packages (white-space seperated)"
         echo "    [#2:]verbosity flag"
-        echo "         \"\" print also installed packages (default)"
+        echo "         \"\" print also uninstalled packages (default)"
         echo "         \"quiet\" less verbose output"
-        echo "    [#3:]using auto-answer for installing packages"
+        echo "    [#3:]using auto-answer for uninstalling packages"
         echo "         (must be -y or --yes)"
         echo "This function checks all given packages and asks for"
         echo "permission to uninstall all installed packages."
