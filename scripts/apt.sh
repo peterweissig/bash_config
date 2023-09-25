@@ -83,112 +83,9 @@ function config_source_list_add_multiverse_restore() {
 
 
 
-#***************************[aptcacher]***************************************
+#***************************[apt-cacher-ng]***********************************
 
-# 2020 12 31
-function config_source_list_aptcacher_set() {
-
-    # print help
-    if [ "$1" == "-h" ]; then
-        echo "$FUNCNAME <ip-address>"
-
-        return
-    fi
-    if [ "$1" == "--help" ]; then
-        echo "$FUNCNAME has 1 option and needs 1 parameter"
-        echo "    [--https2http] downgrades https connections"
-        echo "     #1: ip-address of apt-cacher-ng server"
-        echo "This function changes all source-list files to use the"
-        echo "apt-cacher server. If a server is already set, the source will"
-        echo "not be changed, even if the ip-address is not matching."
-
-        return
-    fi
-
-    # init variables
-    option_https=0
-    param_ip=""
-
-    # check and get parameter
-    params_ok=0
-    if [ $# -ge 1 ] && [ $# -le 2 ]; then
-        params_ok=1
-        param_ip="${@: -1}"
-        if [ $# -ge 2 ]; then
-            if [ "$1" == "--https2http" ]; then
-                option_https=1
-                echo -n "$FUNCNAME: Option Warning - "
-                echo "downgrading https is enabled."
-            else
-                params_ok=0
-            fi
-        fi
-    fi
-    if [ $params_ok -ne 1 ]; then
-        echo "$FUNCNAME: Parameter Error."
-        $FUNCNAME --help
-        return -1
-    fi
-
-    if [ "$param_ip" != "localhost" ] && \
-      ! [[ "$param_ip" =~ ((([0-9]{1,3})\.){3})([0-9]{1,3}) ]]; then
-
-        echo "$FUNCNAME: ip-address ($param_ip) is not valid."
-        return -2
-    fi
-
-    FILENAME_CONFIG="/etc/apt/sources.list"
-    PATH_CONFIG="/etc/apt/sources.list.d/"
-
-    AWK_STRING="
-        # update url of repositories
-
-        # update http
-        \$0 ~ /^deb/ && \$0 !~ /:3142/ {
-          sub( /http:\/\// , \"&${param_ip}:3142/\" )
-        }
-    "
-    # add https-part, if option is set
-    if [ $option_https -eq 1 ]; then
-        AWK_STRING+="
-            # update https
-            \$0 ~ /^deb/ && \$0 !~ /:3142/ && \$0 !~ /HTTPS\/\/\// {
-            sub( /https:\/\// , \"http://${param_ip}:3142/HTTPS///\" )
-            }
-        "
-    fi
-    AWK_STRING+="
-        { print \$0 }
-    "
-
-    # find all entries within config path
-    readarray -t filelist <<< "$(ls "$PATH_CONFIG" 2>> /dev/null | \
-      grep -v -e ".save\$" )"
-        # check result
-        if [ $? -ne 0 ]; then return -2; fi
-    # prepand path to all files
-    for i in ${!filelist[@]}; do
-        filelist[$i]="${PATH_CONFIG}${filelist[$i]}"
-    done
-    # add basic file
-    filelist+=("$FILENAME_CONFIG")
-
-    # iterate over all files
-    for i in ${!filelist[@]}; do
-        if [ "${filelist[$i]}" == "" ] || [ ! -f "${filelist[$i]}" ]; then
-            continue;
-        fi
-        echo "modifying file ${filelist[$i]}"
-
-        # do the configuration
-        _config_file_modify_full "${filelist[$i]}" "apt_cacher" \
-          "$AWK_STRING" "normal" ""
-        if [ $? -ne 0 ]; then return -3; fi
-        echo ""
-    done
-}
-
-# 2021 01 02
+# 2023 09 23
 function config_source_list_aptcacher_check() {
 
     # print help
@@ -200,11 +97,11 @@ function config_source_list_aptcacher_check() {
     if [ "$1" == "--help" ]; then
         echo "$FUNCNAME needs 0-1 parameters"
         echo "    [#1:]verbosity-level"
-        echo "         \"\"         some as normal (default)"
+        echo "         \"\"         same as normal (default)"
         echo "         \"quiet\"    print only errors"
         echo "         \"normal\"   print header and result(s)"
         echo "         \"verbose\"  print also recommandations"
-        echo "This function checks if config_source_list_aptcacher_set"
+        echo "This function checks if config_source_list_aptcacher_unset"
         echo "needs to be called."
 
         return
@@ -242,7 +139,7 @@ function config_source_list_aptcacher_check() {
 
     # initial output
     if [ $param_verb -eq 1 ]; then
-        echo -n "checking apt-cacher sources ... "
+        echo -n "apt sources       ... "
     fi
 
     FILENAME_CONFIG="/etc/apt/sources.list"
@@ -273,7 +170,6 @@ function config_source_list_aptcacher_check() {
     filelist+=("$FILENAME_CONFIG")
 
     error_flag=0
-    https_flag=0
     # iterate over all files
     if [ $param_verb -ge 2 ]; then
         echo ""
@@ -285,30 +181,16 @@ function config_source_list_aptcacher_check() {
 
         if [ $param_verb -ge 2 ]; then
             echo "checking file ${filelist[$i]}"
-        else
-            https_flag=0
         fi
 
-        # check if already set
+        # check if port is set
         temp="$(cat "${filelist[$i]}" | grep --extended-regexp "^deb" | \
-        grep --extended-regexp -v ":[0-9]+")"
+        grep ":3142")"
 
-        # check for https
-        if [ "$(echo "$temp" | grep "https" | wc -w)" -gt 0 ]; then
-            if [ $param_verb -ge 2 ]; then
-                echo "  ... https debs need to be downgraded"
-                https_flag=1
-            else
-                echo ""
-                echo -n "  downgrade https in \"${filelist[$i]}\""
-            fi
-            error_flag=1
-        fi
-
-        if [ "$(echo "$temp" | grep -v "https" | wc -w)" -gt 0 ]; then
+        if [ "$temp" != "" ]; then
             if [ $param_verb -ge 2 ]; then
                 echo "  $FUNCNAME: sources in \"${filelist[$i]}\" can be updated"
-                echo "  run $ config_source_list_aptcacher_set"
+                echo "  run $ config_source_list_aptcacher_unset"
                 return
             else
                 echo ""
@@ -318,25 +200,15 @@ function config_source_list_aptcacher_check() {
         fi
     done
 
-    if [ $param_verb -ge 2 ]; then
-        if [ "${https_flag}" -eq 1 ]; then
+    if [ "$error_flag" -eq 1 ]; then
+        if [ $param_verb -ge 1 ]; then
             echo ""
-            echo "$FUNCNAME: https debs can be updated by downgrading to http"
-            echo "run $ config_source_list_aptcacher_set --https2http"
-            return -3
-        else
-            echo "nothing to do :-)"
+            echo "  --> config_source_list_aptcacher_unset"
         fi
+        return -3
     else
-        if [ "$error_flag" -eq 1 ]; then
-            if [ $param_verb -ge 1 ]; then
-                echo ""
-            fi
-            return -3
-        else
-            if [ $param_verb -ge 1 ]; then
-                echo "ok"
-            fi
+        if [ $param_verb -ge 1 ]; then
+            echo "ok"
         fi
     fi
 }
@@ -346,7 +218,7 @@ function config_source_list_aptcacher_unset() {
 
     # print help and check for user agreement
     _config_simple_parameter_check "$FUNCNAME" "$1" \
-      "changes all source-list files to NOT use the apt-cacher server."
+      "changes all source-list files to NOT use the apt-cacher-ng server."
 
     FILENAME_CONFIG="/etc/apt/sources.list"
     PATH_CONFIG="/etc/apt/sources.list.d/"

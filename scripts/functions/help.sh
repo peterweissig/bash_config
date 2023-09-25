@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #***************************[all]*********************************************
-# 2023 01 28
+# 2023 09 23
 
 function config_help_all() {
 
@@ -65,7 +65,7 @@ function config_help_all() {
     echo ""
     echo "apt"
     echo -n "  "; echo "config_source_list_add_multiverse(_restore)"
-    echo -n "  "; echo "config_source_list_aptcacher_(un)set"
+    echo -n "  "; config_source_list_aptcacher_unset -h
     echo -n "  "; config_source_list_aptcacher_check -h
     echo ""
     echo "cpu"
@@ -84,7 +84,7 @@ function config_help_all() {
 }
 
 #***************************[help]********************************************
-# 2023 01 28
+# 2023 09 23
 
 function config_help() {
 
@@ -120,7 +120,7 @@ function config_help() {
     echo ""
     echo "apt"
     echo -n "  "; echo "config_source_list_add_multiverse(_restore)"
-    echo -n "  "; echo "config_source_list_aptcacher_(un)set"
+    echo -n "  "; config_source_list_aptcacher_unset -h
     echo -n "  "; config_source_list_aptcacher_check -h
     echo ""
     echo "cpu"
