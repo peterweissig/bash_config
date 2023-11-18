@@ -1,9 +1,10 @@
 #!/bin/bash
 
 #***************************[nano]********************************************
-# 2021 02 06
+# 2023 11 18
+function config_nano() { nano_config; }
 
-alias config_nano="nano_config"
+# 2021 02 06
 function nano_config() {
 
     # print help
@@ -84,8 +85,10 @@ function nano_config() {
     fi
 }
 
+# 2023 11 18
+function config_nano_restore() { nano_config_restore; }
+
 # 2020 02 06
-alias config_nano_restore="nano_config_restore"
 function nano_config_restore() {
 
     # print help

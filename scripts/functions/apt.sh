@@ -1,15 +1,19 @@
 #!/bin/bash
 
 #***************************[check sources]***********************************
+# 2023 11 18
+
+function _config_check_sources_vscode() {
+    _config_check_sources "microsoft.com" "vscode"
+}
+function _config_check_sources_nextcloud() {
+    _config_check_sources "nextcloud" "client"
+}
+function _config_check_sources_ros() {
+    _config_check_sources "ros.org"
+}
+
 # 2020 12 30
-
-alias _config_check_sources_vscode="_config_check_sources \
-  microsoft.com vscode"
-alias _config_check_sources_nextcloud="_config_check_sources \
-  nextcloud client"
-alias _config_check_sources_ros="_config_check_sources \
-  ros.org"
-
 function _config_check_sources() {
 
     # print help
