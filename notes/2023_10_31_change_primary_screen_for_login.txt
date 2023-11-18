@@ -1,0 +1,10 @@
+https://discourse.ubuntu.com/t/multiple-screens-and-login-window/17651/2
+
+    # Configure your desktop the way you want.
+    $ sudo cp ~/.config/monitors.xml ~gdm/.config/
+
+    # Edit ~gdm/.config/monitors.xml to make sure the monitor you want as primary is set as <primary> yes </primary>
+
+
+Additional:
+    $ sudo chown gdm:gdm ~gdm/.config/monitors.xml
